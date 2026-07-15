@@ -310,11 +310,18 @@ const Dashboard = () => {
   if (!adminToken) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row md:h-screen md:overflow-hidden">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 bg-brand-blue text-white flex flex-col shrink-0">
         <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <div className="font-bold tracking-wider text-xl uppercase">Aether Admin</div>
+          <div className="flex items-center gap-2">
+            <img
+              src="/assets/Aether-rfid.png"
+              alt="Logo"
+              className="h-8 w-auto object-contain brightness-0 invert"
+            />
+            <span className="text-[10px] uppercase font-extrabold tracking-widest bg-white/15 px-2 py-0.5 rounded text-white/90">Admin</span>
+          </div>
           <button onClick={() => { logoutAdmin(); router.push('/admin'); }} className="md:hidden text-white/70 hover:text-white">
             <LogOut size={20} />
           </button>
@@ -369,7 +376,7 @@ const Dashboard = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-grow p-6 md:p-10 max-w-[1200px] mx-auto w-full">
+      <main className="flex-grow p-6 md:p-10 max-w-[1200px] mx-auto w-full md:overflow-y-auto">
         {/* Header Title */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-200/60 pb-6">
           <div>

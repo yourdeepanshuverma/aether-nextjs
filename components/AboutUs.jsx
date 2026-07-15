@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { Target, Award, ShieldCheck, ArrowRight } from "lucide-react";
 import { useContent } from "@/context/ContentContext";
 

@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { useContent } from "@/context/ContentContext";
 
 const Hero = () => {

@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { Star, Quote } from "lucide-react";
 
 const testimonials = [

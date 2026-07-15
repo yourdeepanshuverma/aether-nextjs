@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import { useContent } from '@/context/ContentContext';
-import { supabase } from '@/utils/supabase';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -20,41 +19,6 @@ import {
 
 const Dashboard = () => {
   const router = useRouter();
-  const [uploading, setUploading] = useState(false);
-
-  const handleImageUpload = async (e, folder, callback) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `${folder}/${fileName}`;
-
-      // Upload the file to Supabase storage bucket 'images'
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      // Retrieve the public URL
-      const { data: publicUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      callback(publicUrlData.publicUrl);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image: ' + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
   const { 
     adminToken, 
     logoutAdmin, 
@@ -542,25 +506,13 @@ const Dashboard = () => {
                     />
                   </div>
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Display Image URL Path</label>
-                      {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold">Uploading...</span>}
-                    </div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Display Image URL Path</label>
                     <input
                       type="text"
                       value={aboutForm.imageUrl}
                       onChange={(e) => setAboutForm({ ...aboutForm, imageUrl: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
                     />
-                    <div className="mt-2">
-                      <input 
-                        type="file" 
-                        accept="image/*"
-                        disabled={uploading}
-                        onChange={(e) => handleImageUpload(e, 'about', (url) => setAboutForm({ ...aboutForm, imageUrl: url }))}
-                        className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
-                      />
-                    </div>
                   </div>
                 </div>
                 
@@ -767,10 +719,7 @@ const Dashboard = () => {
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-bold text-gray-600 uppercase">Banner Image URL Path</label>
-                  {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold">Uploading...</span>}
-                </div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Banner Image URL Path</label>
                 <input
                   type="text"
                   value={blogForm.image}
@@ -778,15 +727,6 @@ const Dashboard = () => {
                   placeholder="e.g. /assets/blogs/banner.jpg"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
                 />
-                <div className="mt-2">
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    disabled={uploading}
-                    onChange={(e) => handleImageUpload(e, 'blogs', (url) => setBlogForm({ ...blogForm, image: url }))}
-                    className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
-                  />
-                </div>
               </div>
 
               <div>
@@ -857,10 +797,7 @@ const Dashboard = () => {
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-bold text-gray-600 uppercase">Profile Image URL Path</label>
-                  {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold">Uploading...</span>}
-                </div>
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Profile Image URL Path</label>
                 <input
                   type="text"
                   value={teamForm.image}
@@ -868,15 +805,6 @@ const Dashboard = () => {
                   placeholder="e.g. https://images.unsplash.com/photo-..."
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
                 />
-                <div className="mt-2">
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    disabled={uploading}
-                    onChange={(e) => handleImageUpload(e, 'team', (url) => setTeamForm({ ...teamForm, image: url }))}
-                    className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
-                  />
-                </div>
               </div>
 
               <div>

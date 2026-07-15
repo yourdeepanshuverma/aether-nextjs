@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import React from "react";
 import { Award, ShieldCheck, Handshake, ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';

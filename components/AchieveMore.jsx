@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { useState, useEffect } from "react";
 import { Rocket, ShieldCheck, ChevronLeft, ChevronRight } from "lucide-react";
 

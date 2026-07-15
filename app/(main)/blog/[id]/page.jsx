@@ -27,7 +27,7 @@ const Linkedin = ({ size = 20 }) => (
 
 const BlogDetails = () => {
   const { id } = useParams();
-  const { blogs: dbBlogs } = useContent();
+  const { blogs: dbBlogs, loading } = useContent();
 
   // Scroll to top on load
   useEffect(() => {
@@ -83,6 +83,53 @@ const BlogDetails = () => {
 
   if (!blog) {
     return <div className="text-center py-20">Loading blog post...</div>;
+  }
+
+    if (loading) {
+    return (
+      <div className="bg-white min-h-screen animate-pulse">
+        {/* Blog Hero Header Skeleton */}
+        <section className="relative h-[50vh] min-h-[400px] w-full flex items-end bg-gray-200">
+          <div className="relative z-10 max-w-[1000px] mx-auto px-5 pb-16 w-full space-y-4">
+            <div className="h-6 w-24 bg-gray-300 rounded"></div>
+            <div className="flex items-center gap-4">
+              <div className="h-6 w-16 bg-gray-300 rounded-full"></div>
+              <div className="h-4 w-24 bg-gray-300 rounded"></div>
+              <div className="h-4 w-20 bg-gray-300 rounded"></div>
+            </div>
+            <div className="h-10 bg-gray-300 rounded w-5/6"></div>
+          </div>
+        </section>
+
+        {/* Content Section Skeleton */}
+        <section className="py-20 max-w-[1400px] mx-auto px-5 lg:px-10">
+          <div className="flex flex-col lg:flex-row gap-16">
+            <div className="lg:w-2/3 space-y-6">
+              <div className="h-6 bg-gray-200 rounded w-full"></div>
+              <div className="h-6 bg-gray-200 rounded w-full"></div>
+              <div className="h-6 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-6 bg-gray-200 rounded w-4/5"></div>
+              <div className="h-24 bg-gray-100 border-l-4 border-gray-200 rounded-r w-full"></div>
+              <div className="h-6 bg-gray-200 rounded w-full"></div>
+              <div className="h-6 bg-gray-200 rounded w-11/12"></div>
+            </div>
+            <div className="lg:w-1/3 space-y-8">
+              <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex gap-4">
+                  <div className="w-24 h-24 bg-gray-200 rounded-xl"></div>
+                  <div className="space-y-3 flex-grow">
+                    <div className="h-4 w-12 bg-gray-200 rounded"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
 
   return (

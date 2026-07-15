@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import React from "react";
 import { Tag, Radio, Antenna, Signal, Network, ArrowRight } from "lucide-react";
 

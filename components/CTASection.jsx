@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { Send, MapPin, Mail, Phone } from "lucide-react";
 
 const CTASection = () => {

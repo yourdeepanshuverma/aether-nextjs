@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { Users, CheckCircle, TrendingUp, UserCheck } from "lucide-react";
 
 const stats = [

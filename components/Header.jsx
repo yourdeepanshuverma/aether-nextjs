@@ -2,6 +2,7 @@
 "use client";
 "use client";
 "use client";
+"use client";
 import { useState } from "react";
 import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";

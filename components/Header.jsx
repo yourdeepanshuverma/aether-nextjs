@@ -1,18 +1,16 @@
 "use client";
-"use client";
-"use client";
-"use client";
-"use client";
 import { useState } from "react";
 import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useContent } from "@/context/ContentContext";
 
 const Header = () => {
+  const { getContent } = useContent();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [dropdown, setDropdown] = useState(null);
   const [activeSubmenu, setActiveSubmenu] = useState(null);
 
-  const navItems = [
+  const fallbackNavItems = [
     {
       name: "About Us",
       dropdown: [
@@ -72,6 +70,9 @@ const Header = () => {
       ],
     },
   ];
+
+  const navItems = getContent("header-nav", { items: fallbackNavItems }).items || fallbackNavItems;
+
   return (
     <header className="sticky top-0 z-50 w-full bg-[#ffffff]/90 backdrop-blur-md text-brand-blue border-b border-white/10">
       <div className="max-w-[1400px] mx-auto px-5 lg:px-10">
@@ -111,10 +112,11 @@ const Header = () => {
                       : "opacity-0 invisible translate-y-3"
                   }`}
                 >
-                  {item.dropdown.map((drop, i) => (
+                  {item.dropdown && item.dropdown.map((drop, i) => (
                     <div key={i} className="relative group/sub">
                       {typeof drop === 'string' ? (
-                        <Link href="/"
+                        <Link
+                          href="/"
                           className="block px-5 py-3 text-sm text-gray-300 hover:bg-[#1b1b1b] hover:text-[#ffffff] transition"
                         >
                           {drop}
@@ -137,7 +139,8 @@ const Header = () => {
                           </div>
                         </div>
                       ) : (
-                        <Link href={drop.path}
+                        <Link
+                          href={drop.path || '/'}
                           className="block px-5 py-3 text-sm text-gray-300 hover:bg-[#1b1b1b] hover:text-[#ffffff] transition"
                         >
                           {drop.name}
@@ -196,10 +199,11 @@ const Header = () => {
                   }`}
                 >
                   <div className="flex flex-col gap-2 pl-3">
-                    {item.dropdown.map((drop, i) => (
+                    {item.dropdown && item.dropdown.map((drop, i) => (
                       <div key={i}>
                         {typeof drop === 'string' ? (
-                          <Link href="/"
+                          <Link
+                            href="/"
                             className="text-gray-400 hover:text-brand-blue text-sm block py-1"
                             onClick={() => setMobileMenu(false)}
                           >
@@ -237,7 +241,8 @@ const Header = () => {
                             </div>
                           </div>
                         ) : (
-                          <Link href={drop.path}
+                          <Link
+                            href={drop.path || '/'}
                             className="text-gray-400 hover:text-brand-blue text-sm block py-1"
                             onClick={() => setMobileMenu(false)}
                           >
@@ -251,7 +256,8 @@ const Header = () => {
               </div>
             ))}
 
-            <Link href="/contact" 
+            <Link 
+              href="/contact" 
               className="bg-brand-blue border-2 border-brand-blue text-white font-semibold px-6 py-3 rounded-full mt-2 hover:bg-[#ffffff] hover:text-brand-blue lg:hover:scale-105 transition duration-300 text-center"
               onClick={() => setMobileMenu(false)}
             >

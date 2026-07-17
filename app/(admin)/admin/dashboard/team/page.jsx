@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle } from 'lucide-react';
@@ -17,8 +17,13 @@ export default function TeamManager() {
     addTeamMember, 
     editTeamMember, 
     removeTeamMember,
+    loadTeam,
     refreshData 
   } = useContent();
+
+  useEffect(() => {
+    loadTeam();
+  }, []);
 
   const showStatus = (success = '', error = '') => {
     setStatusMessage({ success, error });

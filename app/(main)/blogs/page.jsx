@@ -1,10 +1,16 @@
 "use client";
+
+import { useEffect } from "react";
 import { Calendar, User, ArrowRight, Tag } from "lucide-react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 
 const Blogs = () => {
-  const { blogs: dbBlogs, loading } = useContent();
+  const { blogs: dbBlogs, blogsLoading, loadBlogs } = useContent();
+
+  useEffect(() => {
+    loadBlogs();
+  }, []);
 
   const fallbackBlogs = [
     {
@@ -66,7 +72,7 @@ const Blogs = () => {
   const blogs = dbBlogs && dbBlogs.length > 0 ? dbBlogs : fallbackBlogs;
   const featuredBlog = blogs[0];
 
-    if (loading) {
+  if (blogsLoading) {
     return (
       <div className="bg-white min-h-screen">
         {/* Hero Section */}
@@ -98,54 +104,12 @@ const Blogs = () => {
             <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6">
               <div className="flex items-center gap-4">
                 <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
-                <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                <div className="h-6 w-32 bg-gray-200 rounded"></div>
               </div>
-              <div className="h-10 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-10 bg-gray-200 rounded w-2/3"></div>
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/5"></div>
-              <div className="flex items-center justify-between pt-6 border-t border-gray-200/60">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-200"></div>
-                  <div className="h-4 w-20 bg-gray-200 rounded"></div>
-                </div>
-                <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Grid Section Skeleton */}
-        <section className="py-20 bg-gray-50/50">
-          <div className="max-w-[1400px] mx-auto px-5 lg:px-10">
-            <div className="flex justify-center mb-16">
-              <div className="text-center space-y-3">
-                <div className="h-4 w-24 bg-gray-200 rounded mx-auto animate-pulse"></div>
-                <div className="h-8 w-48 bg-gray-200 rounded mx-auto animate-pulse"></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm flex flex-col p-4 animate-pulse">
-                  <div className="h-64 bg-gray-200 rounded-2xl mb-6"></div>
-                  <div className="space-y-4 flex-grow px-2 pb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                      <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                    </div>
-                    <div className="h-6 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-6 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-full mt-4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-4/5"></div>
-                    <div className="pt-6 border-t border-gray-100 flex justify-between items-center mt-6">
-                      <div className="h-4 w-20 bg-gray-200 rounded"></div>
-                      <div className="h-4 w-12 bg-gray-200 rounded"></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <div className="h-10 bg-slate-200 rounded-lg w-3/4"></div>
+              <div className="h-4 bg-slate-100 rounded w-full"></div>
+              <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+              <div className="h-10 bg-slate-200 rounded-full w-28 mt-4"></div>
             </div>
           </div>
         </section>
@@ -323,4 +287,3 @@ const Blogs = () => {
 };
 
 export default Blogs;
-

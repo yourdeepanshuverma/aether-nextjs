@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 import { Cpu, ShieldCheck, Download, ArrowRight } from "lucide-react";
@@ -7,7 +7,11 @@ import { Cpu, ShieldCheck, Download, ArrowRight } from "lucide-react";
 const RFIDHardware = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
-  const { products, loading } = useContent();
+  const { products, productsLoading, loadProducts } = useContent();
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -62,7 +66,7 @@ const RFIDHardware = () => {
     });
   }, [hardwareList, search]);
 
-  if (loading) {
+  if (productsLoading) {
     return (
       <div className="bg-slate-50 min-h-screen">
         <section className="py-20 px-5 lg:px-10 bg-white">

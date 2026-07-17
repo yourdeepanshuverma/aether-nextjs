@@ -75,7 +75,12 @@ export default function ContactsManager() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-gray-400 font-bold">{new Date(c.createdAt).toLocaleString()}</span>
+                  <span className="text-[10px] text-gray-400 font-bold">
+                    {c.created_at || c.createdAt ? (() => {
+                      const d = new Date(c.created_at || c.createdAt);
+                      return isNaN(d.getTime()) ? 'N/A' : d.toLocaleString();
+                    })() : 'N/A'}
+                  </span>
                   <button 
                     onClick={() => handleContactDelete(c._id)} 
                     className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shrink-0"

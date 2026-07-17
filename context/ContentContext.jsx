@@ -11,7 +11,17 @@ export const ContentProvider = ({ children }) => {
   const [team, setTeam] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Loading states
+  const [loading, setLoading] = useState(true); // Global settings loading
+  const [blogsLoading, setBlogsLoading] = useState(false);
+  const [blogsLoaded, setBlogsLoaded] = useState(false);
+  
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [teamLoaded, setTeamLoaded] = useState(false);
+  
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsLoaded, setProductsLoaded] = useState(false);
   
   const [adminToken, setAdminToken] = useState(null);
   const [adminUser, setAdminUser] = useState(null);
@@ -26,21 +36,15 @@ export const ContentProvider = ({ children }) => {
     }
   }, []);
 
-  // Fetch initial public data
-  const fetchData = async () => {
+  // Fetch initial public settings & navigation
+  const fetchSettings = async () => {
     try {
       setLoading(true);
-      const [contentData, blogsData, teamData, productsData] = await Promise.all([
-        api.getContent().catch(err => { console.warn("Backend not running. Content fallback active."); return {}; }),
-        api.getBlogs().catch(err => []),
-        api.getTeam().catch(err => []),
-        api.getProducts().catch(err => [])
-      ]);
-      
+      const contentData = await api.getContent().catch(err => { 
+        console.warn("Backend not running. Content fallback active."); 
+        return {}; 
+      });
       setSiteContent(contentData);
-      setBlogs(blogsData);
-      setTeam(teamData);
-      setProducts(productsData);
     } catch (error) {
       console.error('Failed to load dynamic content:', error);
     } finally {
@@ -49,8 +53,90 @@ export const ContentProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchSettings();
   }, []);
+
+  // Lazy loaders for specific resources
+  const loadBlogs = async () => {
+    if (blogsLoaded || blogsLoading) return;
+    try {
+      setBlogsLoading(true);
+      const data = await api.getBlogs();
+      setBlogs(data);
+      setBlogsLoaded(true);
+    } catch (err) {
+      console.error('Failed to load blogs:', err);
+    } finally {
+      setBlogsLoading(false);
+    }
+  };
+
+  const loadTeam = async () => {
+    if (teamLoaded || teamLoading) return;
+    try {
+      setTeamLoading(true);
+      const data = await api.getTeam();
+      setTeam(data);
+      setTeamLoaded(true);
+    } catch (err) {
+      console.error('Failed to load team:', err);
+    } finally {
+      setTeamLoading(false);
+    }
+  };
+
+  const loadProducts = async () => {
+    if (productsLoaded || productsLoading) return;
+    try {
+      setProductsLoading(true);
+      const data = await api.getProducts();
+      setProducts(data);
+      setProductsLoaded(true);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  // Hard reload all tables (typically triggered by Admin dashboard refresh)
+  const refreshAllData = async () => {
+    try {
+      setLoading(true);
+      setBlogsLoading(true);
+      setTeamLoading(true);
+      setProductsLoading(true);
+      
+      const [contentData, blogsData, teamData, productsData] = await Promise.all([
+        api.getContent().catch(err => ({})),
+        api.getBlogs().catch(err => []),
+        api.getTeam().catch(err => []),
+        api.getProducts().catch(err => [])
+      ]);
+      
+      setSiteContent(contentData);
+      
+      setBlogs(blogsData);
+      setBlogsLoaded(true);
+      
+      setTeam(teamData);
+      setTeamLoaded(true);
+      
+      setProducts(productsData);
+      setProductsLoaded(true);
+
+      if (adminToken) {
+        await loadContacts();
+      }
+    } catch (error) {
+      console.error('Failed to refresh data:', error);
+    } finally {
+      setLoading(false);
+      setBlogsLoading(false);
+      setTeamLoading(false);
+      setProductsLoading(false);
+    }
+  };
 
   // Fetch admin profile if token exists
   useEffect(() => {
@@ -188,38 +274,6 @@ export const ContentProvider = ({ children }) => {
     }
   };
 
-  // Contacts
-  const loadContacts = async () => {
-    if (!adminToken) return;
-    try {
-      const submissions = await api.getContacts(adminToken);
-      setContacts(submissions);
-    } catch (error) {
-      console.error('Failed to load contact submissions:', error);
-    }
-  };
-
-  const submitContactForm = async (contactData) => {
-    try {
-      return await api.submitContact(contactData);
-    } catch (error) {
-      console.error('Failed to submit contact form:', error);
-      throw error;
-    }
-  };
-
-  const removeContact = async (id) => {
-    if (!adminToken) return false;
-    try {
-      await api.deleteContact(id, adminToken);
-      setContacts(prev => prev.filter(c => c._id !== id));
-      return true;
-    } catch (error) {
-      console.error('Failed to delete contact submission:', error);
-      throw error;
-    }
-  };
-
   // Products Managers
   const addProduct = async (productData) => {
     if (!adminToken) return false;
@@ -257,6 +311,38 @@ export const ContentProvider = ({ children }) => {
     }
   };
 
+  // Contacts
+  const loadContacts = async () => {
+    if (!adminToken) return;
+    try {
+      const submissions = await api.getContacts(adminToken);
+      setContacts(submissions);
+    } catch (error) {
+      console.error('Failed to load contact submissions:', error);
+    }
+  };
+
+  const submitContactForm = async (contactData) => {
+    try {
+      return await api.submitContact(contactData);
+    } catch (error) {
+      console.error('Failed to submit contact form:', error);
+      throw error;
+    }
+  };
+
+  const removeContact = async (id) => {
+    if (!adminToken) return false;
+    try {
+      await api.deleteContact(id, adminToken);
+      setContacts(prev => prev.filter(c => c._id !== id));
+      return true;
+    } catch (error) {
+      console.error('Failed to delete contact submission:', error);
+      throw error;
+    }
+  };
+
   // Dynamic Content Retrieval Helper with defaults
   const getContent = (key, defaults = {}) => {
     const dbValue = siteContent[key];
@@ -283,6 +369,9 @@ export const ContentProvider = ({ children }) => {
         contacts,
         products,
         loading,
+        blogsLoading,
+        teamLoading,
+        productsLoading,
         adminUser,
         adminToken,
         loginAdmin,
@@ -299,8 +388,11 @@ export const ContentProvider = ({ children }) => {
         addProduct,
         editProduct,
         removeProduct,
+        loadBlogs,
+        loadTeam,
+        loadProducts,
         getContent,
-        refreshData: fetchData
+        refreshData: refreshAllData
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers } from 'lucide-react';
@@ -23,8 +23,13 @@ export default function ProductsManager() {
     addProduct, 
     editProduct, 
     removeProduct,
+    loadProducts,
     refreshData 
   } = useContent();
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const showStatus = (success = '', error = '') => {
     setStatusMessage({ success, error });

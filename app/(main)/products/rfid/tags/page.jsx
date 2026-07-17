@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 import {
@@ -16,7 +16,11 @@ import {
 const RFIDTags = () => {
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [search, setSearch] = useState("");
-  const { products, loading } = useContent();
+  const { products, productsLoading, loadProducts } = useContent();
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -72,7 +76,7 @@ const RFIDTags = () => {
     });
   }, [tagsList, search]);
 
-  if (loading) {
+  if (productsLoading) {
     return (
       <div className="bg-white min-h-screen">
         <section className="py-20 px-5 lg:px-10 bg-white">

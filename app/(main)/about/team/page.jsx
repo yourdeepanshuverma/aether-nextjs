@@ -1,9 +1,15 @@
 "use client";
+
+import { useEffect } from "react";
 import { Link as LinkIcon, Mail } from "lucide-react";
 import { useContent } from "@/context/ContentContext";
 
 const Team = () => {
-  const { team: dbTeam } = useContent();
+  const { team: dbTeam, teamLoading, loadTeam } = useContent();
+
+  useEffect(() => {
+    loadTeam();
+  }, []);
 
   const fallbackTeam = [
     {
@@ -45,6 +51,41 @@ const Team = () => {
   ];
 
   const teamMembers = dbTeam && dbTeam.length > 0 ? dbTeam : fallbackTeam;
+
+  if (teamLoading) {
+    return (
+      <div className="bg-white">
+        <section className="relative h-[400px] flex items-center justify-center bg-brand-blue overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <img 
+              src="/assets/abstract-blue.jpg" 
+              alt="Background" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="relative z-10 text-center px-5">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Our Team</h1>
+            <p className="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto">
+              A diverse collective of engineers, designers, and strategists united by a single goal: making the invisible, visible.
+            </p>
+          </div>
+        </section>
+        <section className="py-24 animate-pulse">
+          <div className="max-w-[1400px] mx-auto px-5 lg:px-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex flex-col space-y-4">
+                  <div className="aspect-[4/5] bg-slate-100 rounded-[2.5rem] w-full"></div>
+                  <div className="h-6 bg-slate-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-slate-100 rounded w-1/3"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white">
@@ -100,10 +141,11 @@ const Team = () => {
                     </div>
                   </div>
                 </div>
-                <div className="px-2">
-                  <h3 className="text-3xl font-bold text-gray-900 mb-2">{member.name}</h3>
-                  <p className="text-brand-blue font-bold uppercase tracking-wider text-sm mb-4">{member.role}</p>
-                  <p className="text-gray-500 leading-relaxed">{member.bio}</p>
+                
+                <div className="text-center px-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-brand-blue transition-colors">{member.name}</h3>
+                  <p className="text-brand-orange font-bold text-xs uppercase tracking-widest mb-4">{member.role}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-sm mx-auto">{member.bio}</p>
                 </div>
               </div>
             ))}
@@ -115,4 +157,3 @@ const Team = () => {
 };
 
 export default Team;
-

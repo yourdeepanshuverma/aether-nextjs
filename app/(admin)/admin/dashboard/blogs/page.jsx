@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle } from 'lucide-react';
@@ -17,8 +17,13 @@ export default function BlogsManager() {
     addBlog, 
     editBlog, 
     removeBlog,
+    loadBlogs,
     refreshData 
   } = useContent();
+
+  useEffect(() => {
+    loadBlogs();
+  }, []);
 
   const showStatus = (success = '', error = '') => {
     setStatusMessage({ success, error });

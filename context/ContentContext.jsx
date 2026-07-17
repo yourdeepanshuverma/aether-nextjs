@@ -10,6 +10,7 @@ export const ContentProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
   const [team, setTeam] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
   const [adminToken, setAdminToken] = useState(null);
@@ -29,15 +30,17 @@ export const ContentProvider = ({ children }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [contentData, blogsData, teamData] = await Promise.all([
+      const [contentData, blogsData, teamData, productsData] = await Promise.all([
         api.getContent().catch(err => { console.warn("Backend not running. Content fallback active."); return {}; }),
         api.getBlogs().catch(err => []),
-        api.getTeam().catch(err => [])
+        api.getTeam().catch(err => []),
+        api.getProducts().catch(err => [])
       ]);
       
       setSiteContent(contentData);
       setBlogs(blogsData);
       setTeam(teamData);
+      setProducts(productsData);
     } catch (error) {
       console.error('Failed to load dynamic content:', error);
     } finally {
@@ -217,6 +220,43 @@ export const ContentProvider = ({ children }) => {
     }
   };
 
+  // Products Managers
+  const addProduct = async (productData) => {
+    if (!adminToken) return false;
+    try {
+      const newProduct = await api.createProduct(productData, adminToken);
+      setProducts(prev => [newProduct, ...prev]);
+      return newProduct;
+    } catch (error) {
+      console.error('Failed to create product:', error);
+      throw error;
+    }
+  };
+
+  const editProduct = async (id, productData) => {
+    if (!adminToken) return false;
+    try {
+      const updatedProduct = await api.updateProduct(id, productData, adminToken);
+      setProducts(prev => prev.map(p => p._id === id ? updatedProduct : p));
+      return updatedProduct;
+    } catch (error) {
+      console.error('Failed to update product:', error);
+      throw error;
+    }
+  };
+
+  const removeProduct = async (id) => {
+    if (!adminToken) return false;
+    try {
+      await api.deleteProduct(id, adminToken);
+      setProducts(prev => prev.filter(p => p._id !== id));
+      return true;
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      throw error;
+    }
+  };
+
   // Dynamic Content Retrieval Helper with defaults
   const getContent = (key, defaults = {}) => {
     const dbValue = siteContent[key];
@@ -241,6 +281,7 @@ export const ContentProvider = ({ children }) => {
         blogs,
         team,
         contacts,
+        products,
         loading,
         adminUser,
         adminToken,
@@ -255,6 +296,9 @@ export const ContentProvider = ({ children }) => {
         removeTeamMember,
         submitContactForm,
         removeContact,
+        addProduct,
+        editProduct,
+        removeProduct,
         getContent,
         refreshData: fetchData
       }}

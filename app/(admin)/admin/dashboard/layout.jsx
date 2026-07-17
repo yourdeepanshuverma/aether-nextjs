@@ -9,7 +9,8 @@ import {
   Users, 
   Mail, 
   LogOut, 
-  Menu
+  Menu,
+  Package
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }) {
   const navItems = [
     { name: 'Page Content', path: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Navigation Menu', path: '/admin/dashboard/navigation', icon: Menu },
+    { name: 'Manage Products', path: '/admin/dashboard/products', icon: Package },
     { name: 'Manage Blogs', path: '/admin/dashboard/blogs', icon: FileText },
     { name: 'Manage Team', path: '/admin/dashboard/team', icon: Users },
     { name: 'Inquiries', path: '/admin/dashboard/contacts', icon: Mail, badge: contacts.length },

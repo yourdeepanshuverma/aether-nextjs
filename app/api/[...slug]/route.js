@@ -95,6 +95,23 @@ export async function GET(req, { params }) {
       return NextResponse.json(formatted);
     }
 
+    // 7. Products (Public read)
+    if (route === 'products') {
+      if (idOrKey) {
+        if (!isUuid(idOrKey)) {
+          return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+        }
+        const { data, error } = await supabase.from('products').select('*').eq('id', idOrKey).single();
+        if (error) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+        return NextResponse.json({ ...data, _id: data.id });
+      } else {
+        const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        const formatted = data.map(p => ({ ...p, _id: p.id }));
+        return NextResponse.json(formatted);
+      }
+    }
+
     return NextResponse.json({ message: 'Route not found' }, { status: 404 });
   } catch (error) {
     console.error(`API GET Error on /${slug.join('/')}:`, error);
@@ -155,6 +172,18 @@ export async function POST(req, { params }) {
       const { data, error } = await supabase
         .from('team')
         .insert({ name, role, bio, image })
+        .select()
+        .single();
+      if (error) throw error;
+      return NextResponse.json({ ...data, _id: data.id });
+    }
+
+    // 5. Create Product
+    if (route === 'products') {
+      const { name, image, category, specs } = body;
+      const { data, error } = await supabase
+        .from('products')
+        .insert({ name, image, category, specs })
         .select()
         .single();
       if (error) throw error;
@@ -226,6 +255,22 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ ...data, _id: data.id });
     }
 
+    // 4. Update Product
+    if (route === 'products' && idOrKey) {
+      if (!isUuid(idOrKey)) {
+        return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
+      }
+      const { name, image, category, specs } = body;
+      const { data, error } = await supabase
+        .from('products')
+        .update({ name, image, category, specs })
+        .eq('id', idOrKey)
+        .select()
+        .single();
+      if (error) throw error;
+      return NextResponse.json({ ...data, _id: data.id });
+    }
+
     return NextResponse.json({ message: 'Route not found' }, { status: 404 });
   } catch (error) {
     console.error(`API PUT Error on /${slug.join('/')}:`, error);
@@ -268,6 +313,13 @@ export async function DELETE(req, { params }) {
       const { error } = await supabase.from('contacts').delete().eq('id', id);
       if (error) throw error;
       return NextResponse.json({ success: true, message: 'Submission deleted' });
+    }
+
+    // 4. Delete Product
+    if (route === 'products') {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      return NextResponse.json({ success: true, message: 'Product deleted' });
     }
 
     return NextResponse.json({ message: 'Route not found' }, { status: 404 });

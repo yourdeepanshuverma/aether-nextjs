@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useContent } from "@/context/ContentContext";
 import {
   Layers,
   Zap,
@@ -15,6 +16,7 @@ import {
 const RFIDTags = () => {
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [search, setSearch] = useState("");
+  const { products, loading } = useContent();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -31,348 +33,84 @@ const RFIDTags = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(formData);
-
-    // Yahan API call karna hai
-
-    alert("Thank you! We will contact you soon.");
-
-    setShowEnquiry(false);
-
-    setFormData({
-      name: "",
-      mobile: "",
-      email: "",
-      company: "",
-      requirement: "",
-    });
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.mobile,
+          company: formData.company,
+          message: `RFID Tags Enquiry: ${formData.requirement}`
+        })
+      });
+      if (!response.ok) throw new Error("Submission failed");
+      alert("Thank you! Your enquiry has been submitted. We will contact you soon.");
+      setShowEnquiry(false);
+      setFormData({ name: "", mobile: "", email: "", company: "", requirement: "" });
+    } catch (err) {
+      alert("Failed to submit enquiry: " + err.message);
+    }
   };
-  //
 
-  const products = [
-    {
-      name: "Aether Adept 4518",
-      image: "/assets/RFID products/tags/aether-adept-4518.png",
-      chip: "Impinj M730/M830",
-      frequency_band: "UHF (860-960)",
-      dimension: "45 X 18 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Adept 7618",
-      image: "/assets/RFID products/tags/aether-adept-7618.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "45 X 18 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Adept 5030",
-      image: "/assets/RFID products/tags/Aether-Adept-5030.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "50 X 30 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Adept 5030E",
-      image: "/assets/RFID products/tags/Aether-Adept-5030-E.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "50 X 30 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Adept 2212",
-      image: "/assets/RFID products/tags/Aether-Adept-2212.png",
-      chip: "Impinj M730/M830/9N",
-      frequency_band: "UHF (860-960)",
-      dimension: "22 X 11 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Adept 2211",
-      image: "/assets/RFID products/tags/Aether-Adept-2211.jpg",
-      chip: "Impinj M730/M830/9N",
-      frequency_band: "UHF (860-960)",
-      dimension: "22 X 12 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Outfit 6525",
-      image: "/assets/RFID products/tags/Aether-Outfit-6525.jpg",
-      chip: "Impinj M730/M830",
-      frequency_band: "UHF (860-960)",
-      dimension: "65 X 25 mm",
-      inlay_size: "45 X 18 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Apparels, Shoes",
-    },
-    {
-      name: "Aether Outfit 6525",
-      image: "/assets/RFID products/tags/Aether-Outfit-6525-tag.jpg",
-      chip: "Impinj M730/M830",
-      frequency_band: "UHF (860-960)",
-      dimension: "65 X 25 mm",
-      inlay_size: "45 X 18 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Apparels, Shoes",
-    },
-    {
-      name: "Aether Outfit 6535",
-      image: "/assets/RFID products/tags/Aether-Outfit-6535.jpg",
-      chip: "Impinj M730/M830",
-      frequency_band: "UHF (860-960)",
-      dimension: "65 X 35 mm",
-      inlay_size: "50 X 30 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Apparels, Shoes",
-    },
-    {
-      name: "Aether Adept 9812",
-      image: "/assets/RFID products/tags/Aether-Adept-9812.png",
-      chip: "Higgs 9",
-      frequency_band: "UHF (860-960)",
-      dimension: "98 X 12 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Solar",
-    },
-    {
-      name: "Aether Adept 9812 Label",
-      image: "/assets/RFID products/tags/Aether-Adept-9812-Label.png",
-      chip: "Higgs 9",
-      frequency_band: "UHF (860-960)",
-      dimension: "98 X 12 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Solar",
-    },
-    {
-      name: "Aether Adept 9503",
-      image: "/assets/RFID products/tags/aether-adept-9503.jpeg",
-      chip: "Higgs 9",
-      frequency_band: "UHF (860-960)",
-      dimension: "95 X 3 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Solar",
-    },
-    {
-      name: "Aether Traveler 9727",
-      image: "/assets/RFID products/tags/Aether-Traveler-9727.png",
-      chip: "G2iM/M730",
-      frequency_band: "UHF (860-960)",
-      dimension: "100 X 50 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Windshield",
-      printing: "Multi colour",
-      encoding: "Yes",
-    },
-    {
-      name: "Aether Traveler 10025",
-      image: "/assets/RFID products/tags/Aether-Traveler-10025.jpg",
-      chip: "G2iM/M730",
-      frequency_band: "UHF (860-960)",
-      dimension: "100 X 50 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      application: "Windshield",
-      printing: "Multi colour",
-      encoding: "Yes",
-    },
-    {
-      name: "Aether Regalia 5030",
-      image: "/assets/RFID products/tags/Aether-Regalia-5030.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "60 X 18 mm",
-      label_size: "Customisable",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Regalia 4515",
-      image: "/assets/RFID products/tags/Aether-Regalia-4515.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "45 X 15 mm",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-    },
-    {
-      name: "Aether Rinse 7015",
-      image: "/assets/RFID products/tags/Aether-Rinse-7015.png",
-      chip: "Impinj M730/M830/U9",
-      frequency_band: "UHF (860-960)",
-      dimension: "70 X 15 mm",
-      epc_memory: "128 bits TID",
-      memory: "96-bit / 48-b",
-      fixing_mechanism: "Stitch/Heat",
-    },
-    {
-      name: "Aether NFC 27mm",
-      image: "/assets/RFID products/tags/Aether-NFC-27mm.png",
-      chip: "NTAG 213",
-      frequency_band: "HF/NFC 13.56 Mhz",
-      dimension: "27 mm",
-      label_size: "Customisable",
-      form_factor: "Inlays, Labels, Coins",
-    },
-    {
-      name: "Aether Cards 8550",
-      image: "/assets/RFID products/tags/aether-cards-8550.png",
-      chip: "NTAG 213/Mifare 1K/Mifare 4k",
-      frequency_band: "HF/NFC 13.56mhz",
-      dimension: "8550",
-      printing: "Yes",
-    },
-    {
-      name: "Aether Keychain",
-      image: "/assets/RFID products/tags/aether-keychain.jpg",
-      chip: "NTAG 213",
-      frequency_band: "HF/NFC 13.56 Mhz",
-      dimension: "27mm",
-      label_size: "Customisable",
-      form_factor: "Inlays, Labels, Coins",
-    },
-    {
-      name: "Aether Ridge 15025",
-      image: "/assets/RFID products/tags/Aether-Ridge-15025.jpg",
-      chip: "M730",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "150 X 25 X 15 mm",
-      personalisation: "Yes",
-      out_body: "ABS",
-      application: "Stick on metal surface, heavy metal tracking",
-    },
-    {
-      name: "Aether Ridge 15030",
-      image: "/assets/RFID products/tags/Aether-Ridge-15030.jpg",
-      chip: "M730/Higgs 9",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "150 X 30 X 15 mm",
-      personalisation: "Yes",
-      out_body: "ABS",
-      application: "Stick on metal surface, heavy metal tracking",
-    },
-    {
-      name: "Aether Ridge 5618",
-      image: "/assets/RFID products/tags/Aether-Ridge-5618.jpeg",
-      chip: "M730/Higgs 9",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "56 X 18 X 18 mm",
-      personalisation: "Yes",
-      out_body: "ABS",
-      application: "Stick on metal surface, heavy metal tracking",
-    },
-    {
-      name: "Aether Ridge 11025",
-      image: "/assets/RFID products/tags/Aether-Ridge-11025.jpeg",
-      chip: "M730",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "110 X 25 X 8 mm",
-      personalisation: "Yes",
-      out_body: "ABS",
-      application: "Stick off metal surface, wooden pallet tracking",
-    },
-    {
-      name: "Aether Ridge Acrylic",
-      image: "/assets/RFID products/tags/Aether-Ridge-acrylic.jpeg",
-      chip: "M730",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "70 X 30 X 3 mm",
-      personalisation: "Yes",
-      out_body: "ACRYLIC",
-      application: "Stick off/on metal surface, metal assets",
-    },
-    {
-      name: "Aether Ridge PVC",
-      image: "/assets/RFID products/tags/Aether-Ridge-pvc.jpeg",
-      chip: "M730",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "110 X 25 X 1 mm and 40 X 15 X 1 mm",
-      personalisation: "Yes",
-      out_body: "PVC",
-      application: "Stick off metal surface, wooden pallet tracking",
-    },
-    {
-      name: "Aether Ridge PCB 5507",
-      image: "/assets/RFID products/tags/Aether-Ridge-pcb-5507.jpeg",
-      chip: "Higgs 3",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "55 X 7 X 3 mm",
-      personalisation: "Yes",
-      out_body: "PLASTIC",
-      application: "Stick on metal surface, metal assets, tool tracking",
-    },
-    {
-      name: "Aether Ridge PCB 1307",
-      image: "/assets/RFID products/tags/Aether-Ridge-PCB-1307.jpg",
-      chip: "Higgs 3/9",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "13 X 7 X 3 mm",
-      personalisation: "Yes",
-      out_body: "PLASTIC",
-      application: "Stick on metal surface, metal assets, tool tracking",
-    },
-    {
-      name: "Aether Ridge PCB 7005",
-      image: "/assets/RFID products/tags/Aether-Ridge-PCB-7005.jpg",
-      chip: "M730",
-      frequency_band: "UHF 865-867 Mhz",
-      dimension: "70 X 5 X 1 mm",
-      personalisation: "Yes",
-      out_body: "PLASTIC",
-      application: "Stick on metal surface, metal assets, tool tracking",
-    },
-  ];
+  // Filter products by tags category
+  const tagsList = useMemo(() => {
+    return products.filter(p => p.category === 'rfid-tags');
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return tagsList.filter((product) => {
       return (
         product.name.toLowerCase().includes(search.toLowerCase()) ||
-        (product.chip || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.application || "")
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        (product.frequency_band || "")
-          .toLowerCase()
-          .includes(search.toLowerCase())
+        (product.specs?.chip || "").toLowerCase().includes(search.toLowerCase()) ||
+        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase()) ||
+        (product.specs?.frequency_band || "").toLowerCase().includes(search.toLowerCase())
       );
     });
-  }, [search]);
+  }, [tagsList, search]);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen">
+        <section className="py-20 px-5 lg:px-10 bg-white">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-slate-900">
+                RFID Tag Products
+              </h2>
+              <p className="text-slate-600 mt-4">
+                Loading our cutting-edge RFID tags inventory...
+              </p>
+            </div>
+            <div className="space-y-8 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm">
+                  <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
+                    <div className="w-full h-[260px] bg-slate-100 rounded-2xl"></div>
+                    <div className="space-y-4">
+                      <div className="h-8 bg-slate-200 rounded-lg w-1/3"></div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-slate-100 rounded w-full"></div>
+                        <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+                        <div className="h-4 bg-slate-100 rounded w-2/3"></div>
+                      </div>
+                      <div className="h-10 bg-slate-200 rounded-full w-28 mt-4"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Products Section */}
       {/* Products Section */}
       <section className="py-20 px-5 lg:px-10 bg-white">
         <div className="max-w-[1200px] mx-auto">
@@ -415,14 +153,14 @@ const RFIDTags = () => {
 
               return (
                 <div
-                  key={index}
+                  key={product.id || index}
                   className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all"
                 >
                   <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
                     {/* Product Image */}
                     <div className="flex justify-center">
                       <img
-                        src={product.image}
+                        src={product.image || "/assets/placeholder-product.png"}
                         alt={product.name}
                         className="w-full max-w-[260px] h-[260px] object-contain"
                       />
@@ -435,8 +173,7 @@ const RFIDTags = () => {
                       </h3>
 
                       <div className="space-y-2">
-                        {Object.entries(product)
-                          .filter(([key]) => key !== "name" && key !== "image")
+                        {Object.entries(product.specs || {})
                           .map(([key, value]) => (
                             <p key={key} className="text-slate-700">
                               <span className="font-semibold">
@@ -466,6 +203,12 @@ const RFIDTags = () => {
                 </div>
               );
             })}
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 text-gray-400 font-medium">
+                No RFID tag products found matching your search.
+              </div>
+            )}
           </div>
         </div>
       </section>

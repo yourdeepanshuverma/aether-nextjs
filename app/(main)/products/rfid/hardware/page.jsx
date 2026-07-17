@@ -1,11 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useContent } from "@/context/ContentContext";
 import { Cpu, ShieldCheck, Download, ArrowRight } from "lucide-react";
 
 const RFIDHardware = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
+  const { products, loading } = useContent();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,184 +24,83 @@ const RFIDHardware = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(formData);
-
-    // Yahan API call karna hai
-
-    alert("Thank you! We will contact you soon.");
-
-    setShowEnquiry(false);
-
-    setFormData({
-      name: "",
-      mobile: "",
-      email: "",
-      company: "",
-      requirement: "",
-    });
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.mobile,
+          company: formData.company,
+          message: `RFID Hardware Enquiry: ${formData.requirement}`
+        })
+      });
+      if (!response.ok) throw new Error("Submission failed");
+      alert("Thank you! Your enquiry has been submitted. We will contact you soon.");
+      setShowEnquiry(false);
+      setFormData({ name: "", mobile: "", email: "", company: "", requirement: "" });
+    } catch (err) {
+      alert("Failed to submit enquiry: " + err.message);
+    }
   };
-  //
 
-  const products = [
-    {
-      name: "C72-Reader",
-      image: "/assets/RFID products/hardware/c72-front.png",
-      description: "C72 Hand Held Reader",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 10 Meters",
-      read_capacity: "1100 tags/sec",
-      application: "Inventory Management, Retail, WMS and More",
-      main_features: "UHF RFID, NFC, 1D/2D",
-      moq: "1",
-    },
-    {
-      name: "C5-Reader",
-      image: "/assets/RFID products/hardware/c5-front.png",
-      description: "C5 Hand Held Reader",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 10 Meters",
-      read_capacity: "1100 tags/sec",
-      application: "Item level traceability, Inventory Management, Retail, WMS",
-      main_features: "Gen 2X Compliant, UHF RFID, NFC, 1D/2D",
-      moq: "1",
-    },
-    {
-      name: "R6-Reader",
-      image: "/assets/RFID products/hardware/r6-front.png",
-      description: "R6 Hand Held Sled Reader",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 6 Meters",
-      read_capacity: "900 tags/sec",
-      application: "Item level traceability, Inventory Management, Retail, WMS",
-      main_features: "Gen 2X Compliant, UHF RFID, NFC, 1D/2D",
-      moq: "1",
-    },
-    {
-      name: "URA4 Fixed Reader",
-      image: "/assets/RFID products/hardware/ura4-front.png",
-      description: "URA4 Fixed 4 Port Reader",
-      frequency: "UHF (860-960)",
-      operating_system: "Android 9",
-      read_range: "Long Range upto 15 Meters",
-      read_capacity: "900+ tags/sec",
-      application: "Inventory Management, Retail, WMS and more",
-      main_features:
-        "Impinj Module, 4 Port Reader, Port Extension, Android Based, Direct Data Transfer",
-      extension: "1",
-    },
-    {
-      name: "U300 Fixed Reader",
-      image: "/assets/RFID products/hardware/u300-front.jpg",
-      description: "URA4 Fixed 4/8 Port Reader Gen-2X",
-      frequency: "UHF (860-960)",
-      operating_system: "Android 11",
-      read_range: "Long Range upto 15 Meters",
-      read_capacity: "1300+ tags/sec",
-      application: "Inventory Management, Retail, WMS and more.",
-      main_features:
-        "Impinj Module, 4 Port Reader, Port Extension, Android Based, Direct Data Transfer",
-      moq: "1",
-    },
-    {
-      name: "R3 Fixed Reader",
-      image: "/assets/RFID products/hardware/r3-fixed.png",
-      description: "Desktop Reader-Gen2X",
-      frequency: "UHF (860-960)",
-      operating_system: "Android 11",
-      read_range: "Long Range upto 15 Meters",
-      read_capacity: "1300+ tags/sec",
-      application: "Inventory Management, Retail, WMS and more.",
-      main_features:
-        "Impinj Module, 4 Port Reader, Port Extension, Android Based, Direct Data Transfer",
-      moq: "1",
-    },
-    {
-      name: "RFD40 Reader",
-      image: "/assets/RFID products/hardware/rfd40-front.png",
-      description: "RFD40 Hand Held Sled Reader",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 10 Meters",
-      read_capacity: "600 tags/sec",
-      application: "Inventory Management, Retail, WMS and more.",
-      main_features: "UHF RFID, NFC, 1D/2D",
-      moq: "1",
-    },
-    {
-      name: "MC3330XR-Reader",
-      image: "/assets/RFID products/hardware/mc3330-front.png",
-      description: "MC3330XR Held Reader with Android 14",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 8 Meters",
-      read_capacity: "900 tags/sec",
-      application: "Item level traceability, Inventory Management, Retail, WMS",
-      main_features: "UHF RFID, 1D/2D, Screen with keypad High Performance",
-      moq: "1",
-    },
-    {
-      name: "FX9600-Reader",
-      image: "/assets/RFID products/hardware/fx-9600.png",
-      max_reciever_sensitivity: "86dBm monostatic",
-      operating_temperature: "-4deg F to 131deg F (-20deg C to 55deg C)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 12 Meters",
-      read_capacity: "1100 tags/sec",
-      application: "Item level traceability, Inventory Management",
-      moq: "1",
-    },
-    {
-      name: "UHF Reader Antenna",
-      image: "/assets/RFID products/hardware/uhf-reader.png",
-      description: "Aether Long Range 9dBi Antenna",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 12 Meters",
-      application: "Inventory Management, Retail, WMS and more.",
-      main_features:
-        "In House Designed, ABS Body, Long Range, High Performance",
-    },
-    {
-      name: "UHF Reader Antenna AN-480",
-      image: "/assets/RFID products/hardware/uhf-an480.png",
-      description: "Zebra Long Range 9dBi Antenna",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 12 Meters",
-      application: "Inventory Management, Retail, WMS and more.",
-      main_features: "Zebra, ABS Body, Long Range, High Performance",
-    },
-    {
-      name: "Aether Long Range Integrated-Reader",
-      image: "/assets/RFID products/hardware/long-range-rfid-reader.png",
-      description: "Long Range Reader with 12dBi Gain",
-      frequency: "UHF (860-960)",
-      polarisation: "Circular",
-      read_range: "Long Range upto 25 Meters",
-      read_capacity: "1100 tags/sec",
-      application: "Parking, Toll Plaza",
-      main_features: "RS232, RS485, Wiegand, POE",
-    },
-  ];
+  // Filter products by hardware category
+  const hardwareList = useMemo(() => {
+    return products.filter(p => p.category === 'rfid-hardware');
+  }, [products]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return hardwareList.filter((product) => {
       return (
         product.name.toLowerCase().includes(search.toLowerCase()) ||
-        (product.description || "").toLowerCase().includes(search.toLowerCase())
+        (product.specs?.description || "").toLowerCase().includes(search.toLowerCase()) ||
+        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase())
       );
     });
-  }, [products, search]);
+  }, [hardwareList, search]);
+
+  if (loading) {
+    return (
+      <div className="bg-slate-50 min-h-screen">
+        <section className="py-20 px-5 lg:px-10 bg-white">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-slate-900">
+                RFID Hardware Products
+              </h2>
+              <p className="text-slate-600 mt-4">
+                Loading our cutting-edge RFID hardware inventory...
+              </p>
+            </div>
+            <div className="space-y-8 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm">
+                  <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
+                    <div className="w-full h-[260px] bg-slate-100 rounded-2xl"></div>
+                    <div className="space-y-4">
+                      <div className="h-8 bg-slate-200 rounded-lg w-1/3"></div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-slate-100 rounded w-full"></div>
+                        <div className="h-4 bg-slate-100 rounded w-5/6"></div>
+                        <div className="h-4 bg-slate-100 rounded w-2/3"></div>
+                      </div>
+                      <div className="h-10 bg-slate-200 rounded-full w-28 mt-4"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* Products Section */}
       {/* Products Section */}
       <section className="py-20 px-5 lg:px-10 bg-white">
         <div className="max-w-[1200px] mx-auto">
@@ -240,14 +141,14 @@ const RFIDHardware = () => {
 
               return (
                 <div
-                  key={index}
+                  key={product.id || index}
                   className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all"
                 >
                   <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
                     {/* Product Image */}
                     <div className="flex justify-center">
                       <img
-                        src={product.image}
+                        src={product.image || "/assets/placeholder-product.png"}
                         alt={product.name}
                         className="w-full max-w-[260px] h-[260px] object-contain"
                       />
@@ -260,8 +161,7 @@ const RFIDHardware = () => {
                       </h3>
 
                       <div className="space-y-2">
-                        {Object.entries(product)
-                          .filter(([key]) => key !== "name" && key !== "image")
+                        {Object.entries(product.specs || {})
                           .map(([key, value]) => (
                             <p key={key} className="text-slate-700">
                               <span className="font-semibold">
@@ -291,6 +191,12 @@ const RFIDHardware = () => {
                 </div>
               );
             })}
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 text-gray-400 font-medium">
+                No RFID hardware products found matching your search.
+              </div>
+            )}
           </div>
         </div>
       </section>

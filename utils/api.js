@@ -117,5 +117,29 @@ export const api = {
     request(`/contacts/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
+    }),
+
+  // Products
+  getProducts: () => 
+    request('/products'),
+    
+  createProduct: (productData, token) => 
+    request('/products', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(productData)
+    }),
+    
+  updateProduct: (id, productData, token) => 
+    request(`/products/${id}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(productData)
+    }),
+    
+  deleteProduct: (id, token) => 
+    request(`/products/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
     })
 };

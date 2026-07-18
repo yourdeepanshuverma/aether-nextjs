@@ -2,25 +2,15 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
-import {
-  Layers,
-  Zap,
-  ShieldCheck,
-  Download,
-  ArrowRight,
-  Tag,
-  ScanLine,
-  Radio,
-} from "lucide-react";
+import { Layers, Zap, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw } from "lucide-react";
 
 const RFIDTags = () => {
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [search, setSearch] = useState("");
-  const { products, productsLoading, loadProducts } = useContent();
+  const [selectedType, setSelectedType] = useState("all"); // 'all' | 'label' | 'on-metal' | 'nfc' | 'specialty'
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
+  const { products, productsLoading, loadProducts } = useContent();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +19,10 @@ const RFIDTags = () => {
     company: "",
     requirement: "",
   });
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -60,21 +54,62 @@ const RFIDTags = () => {
     }
   };
 
+  // Helper to categorize tag dynamically
+  const getTagType = (product) => {
+    const name = product.name.toLowerCase();
+    const freq = (product.specs?.frequency_band || '').toLowerCase();
+    const body = (product.specs?.out_body || '').toLowerCase();
+    const app = (product.specs?.application || '').toLowerCase();
+    
+    if (freq.includes('hf') || freq.includes('nfc') || name.includes('nfc') || name.includes('keychain') || name.includes('card')) return 'nfc';
+    if (name.includes('ridge') || body.includes('abs') || body.includes('pcb') || body.includes('acrylic') || body.includes('plastic') || body.includes('pvc') || app.includes('metal')) return 'on-metal';
+    if (name.includes('traveler') || name.includes('rinse') || app.includes('windshield')) return 'specialty';
+    return 'label';
+  };
+
   // Filter products by tags category
   const tagsList = useMemo(() => {
     return products.filter(p => p.category === 'rfid-tags');
   }, [products]);
 
+  // Compute counts for badges in filters
+  const filterCounts = useMemo(() => {
+    const counts = {
+      all: tagsList.length,
+      label: 0,
+      'on-metal': 0,
+      nfc: 0,
+      specialty: 0
+    };
+
+    tagsList.forEach(p => {
+      const type = getTagType(p);
+      if (counts[type] !== undefined) counts[type]++;
+    });
+
+    return counts;
+  }, [tagsList]);
+
   const filteredProducts = useMemo(() => {
     return tagsList.filter((product) => {
-      return (
+      // 1. Search Query filter
+      const matchesSearch = 
         product.name.toLowerCase().includes(search.toLowerCase()) ||
         (product.specs?.chip || "").toLowerCase().includes(search.toLowerCase()) ||
         (product.specs?.application || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.frequency_band || "").toLowerCase().includes(search.toLowerCase())
-      );
+        (product.specs?.frequency_band || "").toLowerCase().includes(search.toLowerCase());
+
+      // 2. Tag Type filter
+      const matchesType = selectedType === "all" || getTagType(product) === selectedType;
+
+      return matchesSearch && matchesType;
     });
-  }, [tagsList, search]);
+  }, [tagsList, search, selectedType]);
+
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedType("all");
+  };
 
   if (productsLoading) {
     return (
@@ -115,104 +150,219 @@ const RFIDTags = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Products Section */}
-      <section className="py-20 px-5 lg:px-10 bg-white">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900">
-              RFID Tag Products
-            </h2>
-            <p className="text-slate-600 mt-4">
-              Explore our range of RFID tags, readers and tracking solutions.
-            </p>
-          </div>
-          <div className="mb-8">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-brand-green"
-            />
-          </div>
+      {/* Hero Header */}
+      <section className="bg-slate-900 text-white py-16 px-5 border-b border-white/5">
+        <div className="max-w-[1400px] mx-auto text-center">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">RFID Tag Products</h1>
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
+           Explore our range of RFID tags, readers and tracking solutions.
+          </p>
+        </div>
+      </section>
 
-          <div className="space-y-8">
-            {filteredProducts.map((product, index) => {
-              const labels = {
-                chip: "Chip",
-                frequency_band: "Frequency Band",
-                dimension: "Dimension",
-                inlay_size: "Inlay Size",
-                label_size: "Label Size",
-                epc_memory: "EPC Memory",
-                memory: "Memory",
-                application: "Application",
-                printing: "Printing",
-                encoding: "Encoding",
-                form_factor: "Form Factor",
-                personalisation: "Personalisation",
-                out_body: "Outer Body",
-                fixing_mechanism: "Fixing Mechanism",
-              };
-
-              return (
-                <div
-                  key={product.id || index}
-                  className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all"
-                >
-                  <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
-                    {/* Product Image */}
-                    <div className="flex justify-center">
-                      <img
-                        src={product.image || "/assets/placeholder-product.png"}
-                        alt={product.name}
-                        className="w-full max-w-[260px] h-[260px] object-contain"
-                      />
-                    </div>
-
-                    {/* Product Details */}
-                    <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-5">
-                        {product.name}
-                      </h3>
-
-                      <div className="space-y-2">
-                        {Object.entries(product.specs || {})
-                          .map(([key, value]) => (
-                            <p key={key} className="text-slate-700">
-                              <span className="font-semibold">
-                                {labels[key] ||
-                                  key
-                                    .replace(/_/g, " ")
-                                    .replace(/\b\w/g, (char) =>
-                                      char.toUpperCase(),
-                                    )}
-                                :
-                              </span>{" "}
-                              {value}
-                            </p>
-                          ))}
-                      </div>
-
-                      <div className="mt-6">
-                        <button
-                          onClick={() => setShowEnquiry(true)}
-                          className="px-8 py-3 bg-brand-green text-white rounded-full hover:opacity-90 transition-all"
-                        >
-                          Enquire Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 text-gray-400 font-medium">
-                No RFID tag products found matching your search.
-              </div>
+      {/* Catalog Container */}
+      <section className="py-12 px-5 lg:px-10">
+        <div className="max-w-[1400px] mx-auto">
+          
+          {/* Mobile Filter Toggle Button */}
+          <div className="flex md:hidden items-center justify-between gap-4 mb-6">
+            <button 
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="flex-1 flex items-center justify-center gap-2 bg-brand-blue text-white py-3 px-4 rounded-xl text-sm font-bold shadow-sm"
+            >
+              <Filter size={16} />
+              {mobileFiltersOpen ? "Hide Filters" : "Show Filters & Search"}
+            </button>
+            {(selectedType !== 'all' || search) && (
+              <button 
+                onClick={resetFilters}
+                className="bg-gray-200 text-gray-700 p-3 rounded-xl hover:bg-gray-300 transition-colors"
+                title="Reset Filters"
+              >
+                <RefreshCw size={16} />
+              </button>
             )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
+            
+            {/* 1. FILTER SIDEBAR */}
+            <aside className={`bg-slate-50 border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 ${
+              mobileFiltersOpen ? 'block' : 'hidden md:block'
+            }`}>
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+                <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <SlidersHorizontal size={16} className="text-brand-orange" /> Filters
+                </span>
+                {(selectedType !== 'all' || search) && (
+                  <button 
+                    onClick={resetFilters}
+                    className="text-[10px] font-bold text-red-600 hover:text-red-800 underline transition-all"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Search input in sidebar */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Search Keywords</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Adept, NFC, ABS..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full border border-slate-200 bg-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
+                />
+              </div>
+
+              {/* Tag Category Filter */}
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Tag Form Factor</label>
+                <div className="space-y-1.5">
+                  {[
+                    { key: 'all', label: 'All Tags', count: filterCounts.all },
+                    { key: 'label', label: 'Smart Labels & Inlays', count: filterCounts.label },
+                    { key: 'on-metal', label: 'ABS/PCB On-Metal', count: filterCounts['on-metal'] },
+                    { key: 'nfc', label: 'NFC/HF Keychains & Cards', count: filterCounts.nfc },
+                    { key: 'specialty', label: 'Specialty (Windshield/Rinse)', count: filterCounts.specialty }
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      onClick={() => setSelectedType(item.key)}
+                      className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        selectedType === item.key
+                          ? 'bg-brand-blue text-white shadow-sm'
+                          : 'text-slate-600 hover:bg-slate-200/50'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                        selectedType === item.key
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-200 text-slate-600'
+                      }`}>
+                        {item.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* 2. PRODUCTS GRID LIST */}
+            <main className="space-y-6">
+              
+              {/* Filter Results header */}
+              <div className="flex justify-between items-center bg-white border border-slate-200/60 p-4 px-6 rounded-2xl shadow-sm text-xs font-semibold text-slate-500">
+                <span>Showing {filteredProducts.length} RFID tags</span>
+                {(selectedType !== 'all' || search) && (
+                  <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
+                    Filters Active
+                  </span>
+                )}
+              </div>
+
+              {/* Cards list */}
+              <div className="space-y-6">
+                {filteredProducts.map((product, index) => {
+                  const labels = {
+                    chip: "Chip",
+                    frequency_band: "Frequency Band",
+                    dimension: "Dimension",
+                    inlay_size: "Inlay Size",
+                    label_size: "Label Size",
+                    epc_memory: "EPC Memory",
+                    memory: "Memory",
+                    application: "Application",
+                    printing: "Printing",
+                    encoding: "Encoding",
+                    form_factor: "Form Factor",
+                    personalisation: "Personalisation",
+                    out_body: "Outer Body",
+                    fixing_mechanism: "Fixing Mechanism",
+                  };
+
+                  return (
+                    <div
+                      key={product.id || index}
+                      className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
+                    >
+                      <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-center">
+                        
+                        {/* Product Image */}
+                        <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
+                          <img
+                            src={product.image || "/assets/placeholder-product.png"}
+                            alt={product.name}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+
+                        {/* Product Details */}
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <span className={`text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider ${
+                              getTagType(product) === 'on-metal'
+                                ? 'bg-red-50 text-red-600 border border-red-100'
+                                : getTagType(product) === 'nfc'
+                                ? 'bg-purple-50 text-purple-600 border border-purple-100'
+                                : getTagType(product) === 'specialty'
+                                ? 'bg-orange-50 text-orange-600 border border-orange-100'
+                                : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'
+                            }`}>
+                              {getTagType(product).replace('-', ' ')}
+                            </span>
+                            {product.specs?.frequency_band && (
+                              <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                                {product.specs.frequency_band}
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="text-xl md:text-2xl font-extrabold text-slate-900 mb-5 tracking-tight">
+                            {product.name}
+                          </h3>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                            {Object.entries(product.specs || {})
+                              .map(([key, value]) => (
+                                <p key={key} className="text-slate-700">
+                                  <span className="font-semibold text-slate-950">
+                                    {labels[key] ||
+                                      key
+                                        .replace(/_/g, " ")
+                                        .replace(/\b\w/g, (char) =>
+                                          char.toUpperCase(),
+                                        )}
+                                    :
+                                  </span>{" "}
+                                  {value}
+                                </p>
+                              ))}
+                          </div>
+
+                          <div className="mt-6 pt-6 border-t border-slate-100">
+                            <button
+                              onClick={() => setShowEnquiry(true)}
+                              className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
+                            >
+                              Enquire Now
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {filteredProducts.length === 0 && (
+                  <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 text-slate-400 font-medium">
+                    No RFID tags found matching your active filters.
+                  </div>
+                )}
+              </div>
+            </main>
           </div>
         </div>
       </section>

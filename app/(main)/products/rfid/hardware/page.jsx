@@ -2,16 +2,16 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
-import { Cpu, ShieldCheck, Download, ArrowRight } from "lucide-react";
+import { Cpu, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw } from "lucide-react";
 
 const RFIDHardware = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
-  const { products, productsLoading, loadProducts } = useContent();
+  const [selectedType, setSelectedType] = useState("all"); // 'all' | 'handheld' | 'fixed' | 'antenna'
+  const [selectedRange, setSelectedRange] = useState("all"); // 'all' | 'short' | 'long'
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
+  const { products, productsLoading, loadProducts } = useContent();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -20,6 +20,10 @@ const RFIDHardware = () => {
     company: "",
     requirement: "",
   });
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -51,20 +55,81 @@ const RFIDHardware = () => {
     }
   };
 
+  // Helper to categorize hardware dynamically
+  const getHardwareType = (product) => {
+    const name = product.name.toLowerCase();
+    const desc = (product.specs?.description || '').toLowerCase();
+    const feat = (product.specs?.main_features || '').toLowerCase();
+    
+    if (name.includes('antenna') || desc.includes('antenna')) return 'antenna';
+    if (name.includes('fixed') || desc.includes('fixed') || name.includes('ura4') || name.includes('u300') || name.includes('r3') || name.includes('fx9600')) return 'fixed';
+    return 'handheld';
+  };
+
+  // Helper to check range
+  const getRangeType = (product) => {
+    const range = (product.specs?.read_range || '').toLowerCase();
+    if (!range) return 'short';
+    // extract digits from range string
+    const match = range.match(/\d+/);
+    if (match) {
+      const meters = parseInt(match[0], 10);
+      return meters >= 8 ? 'long' : 'short';
+    }
+    return 'short';
+  };
+
   // Filter products by hardware category
   const hardwareList = useMemo(() => {
     return products.filter(p => p.category === 'rfid-hardware');
   }, [products]);
 
+  // Compute counts for badges in filters
+  const filterCounts = useMemo(() => {
+    const counts = {
+      all: hardwareList.length,
+      handheld: 0,
+      fixed: 0,
+      antenna: 0,
+      rangeAll: hardwareList.length,
+      short: 0,
+      long: 0
+    };
+
+    hardwareList.forEach(p => {
+      const type = getHardwareType(p);
+      const range = getRangeType(p);
+      
+      if (counts[type] !== undefined) counts[type]++;
+      if (counts[range] !== undefined) counts[range]++;
+    });
+
+    return counts;
+  }, [hardwareList]);
+
   const filteredProducts = useMemo(() => {
     return hardwareList.filter((product) => {
-      return (
+      // 1. Search Query filter
+      const matchesSearch = 
         product.name.toLowerCase().includes(search.toLowerCase()) ||
         (product.specs?.description || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase())
-      );
+        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase());
+
+      // 2. Hardware Type filter
+      const matchesType = selectedType === "all" || getHardwareType(product) === selectedType;
+
+      // 3. Read Range filter
+      const matchesRange = selectedRange === "all" || getRangeType(product) === selectedRange;
+
+      return matchesSearch && matchesType && matchesRange;
     });
-  }, [hardwareList, search]);
+  }, [hardwareList, search, selectedType, selectedRange]);
+
+  const resetFilters = () => {
+    setSearch("");
+    setSelectedType("all");
+    setSelectedRange("all");
+  };
 
   if (productsLoading) {
     return (
@@ -105,102 +170,237 @@ const RFIDHardware = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* Products Section */}
-      <section className="py-20 px-5 lg:px-10 bg-white">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900">
-              RFID Hardware Products
-            </h2>
-            <p className="text-slate-600 mt-4">
-              Explore our range of RFID tags, readers and tracking solutions.
-            </p>
-          </div>
+      {/* Hero Header */}
+      <section className="bg-slate-900 text-white py-16 px-5 border-b border-white/5">
+        <div className="max-w-[1400px] mx-auto text-center">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">RFID Hardware Products</h1>
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
+            Explore our range of RFID tags, readers and tracking solutions.
+          </p>
+        </div>
+      </section>
 
-          <div className="mb-8">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-5 py-3 focus:outline-none focus:ring-2 focus:ring-brand-green"
-            />
-          </div>
-          <div className="space-y-8">
-            {filteredProducts.map((product, index) => {
-              const labels = {
-                description: "Description",
-                frequency: "Frequency",
-                polarisation: "Polarisation",
-                operating_system: "Operating System",
-                operating_temperature: "Operating Temperature",
-                read_range: "Read Range",
-                read_capacity: "Read Capacity",
-                application: "Application",
-                main_features: "Main Features",
-                max_reciever_sensitivity: "Max Receiver Sensitivity",
-                extension: "Extension",
-                moq: "MOQ",
-              };
-
-              return (
-                <div
-                  key={product.id || index}
-                  className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-lg transition-all"
-                >
-                  <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
-                    {/* Product Image */}
-                    <div className="flex justify-center">
-                      <img
-                        src={product.image || "/assets/placeholder-product.png"}
-                        alt={product.name}
-                        className="w-full max-w-[260px] h-[260px] object-contain"
-                      />
-                    </div>
-
-                    {/* Product Details */}
-                    <div>
-                      <h3 className="text-2xl font-bold text-slate-900 mb-5">
-                        {product.name}
-                      </h3>
-
-                      <div className="space-y-2">
-                        {Object.entries(product.specs || {})
-                          .map(([key, value]) => (
-                            <p key={key} className="text-slate-700">
-                              <span className="font-semibold">
-                                {labels[key] ||
-                                  key
-                                    .replace(/_/g, " ")
-                                    .replace(/\b\w/g, (char) =>
-                                      char.toUpperCase(),
-                                    )}
-                                :
-                              </span>{" "}
-                              {value}
-                            </p>
-                          ))}
-                      </div>
-
-                      <div className="mt-6">
-                        <button
-                          onClick={() => setShowEnquiry(true)}
-                          className="px-8 py-3 bg-brand-green text-white rounded-full hover:opacity-90 transition-all"
-                        >
-                          Enquire Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 text-gray-400 font-medium">
-                No RFID hardware products found matching your search.
-              </div>
+      {/* Catalog Container */}
+      <section className="py-12 px-5 lg:px-10">
+        <div className="max-w-[1400px] mx-auto">
+          
+          {/* Mobile Filter Toggle Button */}
+          <div className="flex md:hidden items-center justify-between gap-4 mb-6">
+            <button 
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="flex-1 flex items-center justify-center gap-2 bg-brand-blue text-white py-3 px-4 rounded-xl text-sm font-bold shadow-sm"
+            >
+              <Filter size={16} />
+              {mobileFiltersOpen ? "Hide Filters" : "Show Filters & Search"}
+            </button>
+            {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
+              <button 
+                onClick={resetFilters}
+                className="bg-gray-200 text-gray-700 p-3 rounded-xl hover:bg-gray-300 transition-colors"
+                title="Reset Filters"
+              >
+                <RefreshCw size={16} />
+              </button>
             )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
+            
+            {/* 1. FILTER SIDEBAR (Desktop: Visible, Mobile: Collapsible) */}
+            <aside className={`bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 ${
+              mobileFiltersOpen ? 'block' : 'hidden md:block'
+            }`}>
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <SlidersHorizontal size={16} className="text-brand-orange" /> Filters
+                </span>
+                {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
+                  <button 
+                    onClick={resetFilters}
+                    className="text-[10px] font-bold text-red-600 hover:text-red-800 underline transition-all"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Search input in sidebar */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Search Keywords</label>
+                <input
+                  type="text"
+                  placeholder="e.g. C72, Zebra..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
+                />
+              </div>
+
+              {/* Hardware Type Filter */}
+              <div className="space-y-3">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Product Type</label>
+                <div className="space-y-1.5">
+                  {[
+                    { key: 'all', label: 'All Hardware', count: filterCounts.all },
+                    { key: 'handheld', label: 'Handheld Readers', count: filterCounts.handheld },
+                    { key: 'fixed', label: 'Fixed Readers', count: filterCounts.fixed },
+                    { key: 'antenna', label: 'Antennas', count: filterCounts.antenna }
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      onClick={() => setSelectedType(item.key)}
+                      className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        selectedType === item.key
+                          ? 'bg-brand-blue text-white shadow-sm'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                        selectedType === item.key
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        {item.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Read Range Filter */}
+              <div className="space-y-3 pt-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Read Range</label>
+                <div className="space-y-1.5">
+                  {[
+                    { key: 'all', label: 'All Ranges', count: filterCounts.rangeAll },
+                    { key: 'short', label: 'Short/Mid (< 8m)', count: filterCounts.short },
+                    { key: 'long', label: 'Long Range (8m+)', count: filterCounts.long }
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      onClick={() => setSelectedRange(item.key)}
+                      className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        selectedRange === item.key
+                          ? 'bg-brand-blue text-white shadow-sm'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                        selectedRange === item.key
+                          ? 'bg-white/20 text-white'
+                          : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        {item.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
+
+            {/* 2. PRODUCTS GRID LIST */}
+            <main className="space-y-6">
+              
+              {/* Filter Results header */}
+              <div className="flex justify-between items-center bg-white border border-slate-200/60 p-4 px-6 rounded-2xl shadow-sm text-xs font-semibold text-slate-500">
+                <span>Showing {filteredProducts.length} hardware products</span>
+                {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
+                  <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
+                    Filters Active
+                  </span>
+                )}
+              </div>
+
+              {/* Cards list */}
+              <div className="space-y-6">
+                {filteredProducts.map((product, index) => {
+                  const labels = {
+                    description: "Description",
+                    frequency: "Frequency",
+                    polarisation: "Polarisation",
+                    operating_system: "Operating System",
+                    operating_temperature: "Operating Temperature",
+                    read_range: "Read Range",
+                    read_capacity: "Read Capacity",
+                    application: "Application",
+                    main_features: "Main Features",
+                    max_reciever_sensitivity: "Max Receiver Sensitivity",
+                    extension: "Extension",
+                    moq: "MOQ",
+                  };
+
+                  return (
+                    <div
+                      key={product.id || index}
+                      className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
+                    >
+                      <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-center">
+                        
+                        {/* Product Image */}
+                        <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
+                          <img
+                            src={product.image || "/assets/placeholder-product.png"}
+                            alt={product.name}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+
+                        {/* Product Details */}
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <span className="text-[10px] font-extrabold bg-brand-blue/15 text-brand-blue uppercase px-3 py-1 rounded-full tracking-wider">
+                              {getHardwareType(product)} Reader
+                            </span>
+                            <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                              {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
+                            </span>
+                          </div>
+
+                          <h3 className="text-xl md:text-2xl font-extrabold text-slate-900 mb-5 tracking-tight">
+                            {product.name}
+                          </h3>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                            {Object.entries(product.specs || {})
+                              .map(([key, value]) => (
+                                <p key={key} className="text-slate-700">
+                                  <span className="font-semibold text-slate-950">
+                                    {labels[key] ||
+                                      key
+                                        .replace(/_/g, " ")
+                                        .replace(/\b\w/g, (char) =>
+                                          char.toUpperCase(),
+                                        )}
+                                    :
+                                  </span>{" "}
+                                  {value}
+                                </p>
+                              ))}
+                          </div>
+
+                          <div className="mt-6 pt-6 border-t border-slate-100">
+                            <button
+                              onClick={() => setShowEnquiry(true)}
+                              className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
+                            >
+                              Enquire Now
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {filteredProducts.length === 0 && (
+                  <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 text-slate-400 font-medium">
+                    No RFID hardware products found matching your active filters.
+                  </div>
+                )}
+              </div>
+            </main>
           </div>
         </div>
       </section>

@@ -6,6 +6,7 @@ import { Layers, Zap, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizont
 
 const RFIDTags = () => {
   const [showEnquiry, setShowEnquiry] = useState(false);
+  const [enquiryProduct, setEnquiryProduct] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState("all"); // 'all' | 'label' | 'on-metal' | 'nfc' | 'specialty'
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -42,12 +43,12 @@ const RFIDTags = () => {
           email: formData.email,
           phone: formData.mobile,
           company: formData.company,
-          message: `RFID Tags Enquiry: ${formData.requirement}`
+          message: `Product Enquiry for: ${enquiryProduct?.name || 'RFID Tag'} (Category: RFID Tags)\n\nRequirement details:\n${formData.requirement}`
         })
       });
       if (!response.ok) throw new Error("Submission failed");
       alert("Thank you! Your enquiry has been submitted. We will contact you soon.");
-      setShowEnquiry(false);
+      setEnquiryProduct(null);
       setFormData({ name: "", mobile: "", email: "", company: "", requirement: "" });
     } catch (err) {
       alert("Failed to submit enquiry: " + err.message);
@@ -344,7 +345,7 @@ const RFIDTags = () => {
 
                           <div className="mt-6 pt-6 border-t border-slate-100">
                             <button
-                              onClick={() => setShowEnquiry(true)}
+                              onClick={() => setEnquiryProduct(product)}
                               className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
                             >
                               Enquire Now
@@ -417,18 +418,19 @@ const RFIDTags = () => {
         </div>
       </section>
 
-      {showEnquiry && (
+      {enquiryProduct && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-lg p-8 relative">
             <button
-              onClick={() => setShowEnquiry(false)}
+              onClick={() => setEnquiryProduct(null)}
               className="absolute right-5 top-4 text-3xl text-gray-500 hover:text-red-500"
             >
               ×
             </button>
 
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Product Enquiry
+            <h2 className="text-2xl font-bold mb-6 text-center leading-tight">
+              Enquiry for <br />
+              <span className="text-brand-blue">{enquiryProduct.name}</span>
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">

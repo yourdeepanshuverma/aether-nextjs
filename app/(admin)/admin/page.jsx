@@ -47,8 +47,8 @@ const Login = () => {
 
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-10 relative z-10">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-blue">
-            <ShieldAlert size={32} />
+          <div className="w-auto h-16 flex items-center justify-center mx-auto mb-4">
+            <img src="/assets/Aether-rfid.png" alt="Aether Logo" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Admin Portal</h2>
           <p className="text-gray-500 mt-2">Sign in to manage your website content dynamically</p>
@@ -105,11 +105,6 @@ const Login = () => {
           </button>
         </form>
         
-        <div className="mt-8 text-center border-t border-gray-100 pt-6">
-          <p className="text-xs text-gray-400">
-            For initial setup, check the seeded database credentials.
-          </p>
-        </div>
       </div>
     </div>
   );

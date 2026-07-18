@@ -32,6 +32,25 @@ export default function ProductsManager() {
     loadProducts();
   }, []);
 
+  const uniqueSubcategories = useMemo(() => {
+    const types = new Set();
+    products.forEach(p => {
+      if (p.specs?.type) types.add(p.specs.type);
+    });
+    // Add default suggestions depending on selected category
+    if (productForm.category === 'rfid-hardware') {
+      types.add("Handheld Reader");
+      types.add("Fixed Reader");
+      types.add("Antenna");
+    } else {
+      types.add("Smart Label / Inlay");
+      types.add("ABS/PCB On-Metal");
+      types.add("NFC Keychain & Card");
+      types.add("Specialty Tag");
+    }
+    return Array.from(types).sort();
+  }, [products, productForm.category]);
+
   const showStatus = (success = '', error = '') => {
     setStatusMessage({ success, error });
     setTimeout(() => setStatusMessage({ success: '', error: '' }), 4000);
@@ -341,41 +360,64 @@ export default function ProductsManager() {
                 />
               </div>
 
-              {/* Product Category & Image Upload */}
+              {/* Product Category & Sub-Category Type */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Category Type</label>
                   <select
                     value={productForm.category}
-                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value, specs: {} })}
+                    onChange={(e) => setProductForm({ 
+                      ...productForm, 
+                      category: e.target.value, 
+                      specs: { type: e.target.value === 'rfid-hardware' ? 'Handheld Reader' : 'Smart Label / Inlay' } 
+                    })}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none bg-white cursor-pointer"
                   >
                     <option value="rfid-hardware">RFID Hardware</option>
                     <option value="rfid-tags">RFID Tags</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block text-xs font-bold text-gray-600 uppercase">Product Image URL</label>
-                    {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold">Uploading...</span>}
-                  </div>
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-2">Sub-Category Type</label>
                   <input
                     type="text"
-                    value={productForm.image}
-                    onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                    placeholder="e.g. /assets/RFID products/...png"
+                    list="subcategories-list"
+                    value={productForm.specs.type || ''}
+                    onChange={(e) => setProductForm({ ...productForm, specs: { ...productForm.specs, type: e.target.value } })}
+                    placeholder="Select or type a subcategory..."
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
+                    required
                   />
-                  <div className="mt-2">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      disabled={uploading}
-                      onChange={(e) => handleImageUpload(e, (url) => setProductForm({ ...productForm, image: url }))}
-                      className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
-                    />
-                  </div>
+                  <datalist id="subcategories-list">
+                    {uniqueSubcategories.map(cat => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              {/* Product Image URL & Upload */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-bold text-gray-600 uppercase">Product Image URL</label>
+                  {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold">Uploading...</span>}
+                </div>
+                <input
+                  type="text"
+                  value={productForm.image}
+                  onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                  placeholder="e.g. /assets/RFID products/...png"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
+                />
+                <div className="mt-2">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    disabled={uploading}
+                    onChange={(e) => handleImageUpload(e, (url) => setProductForm({ ...productForm, image: url }))}
+                    className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
+                  />
                 </div>
               </div>
 

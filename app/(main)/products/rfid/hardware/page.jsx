@@ -8,8 +8,8 @@ const RFIDHardware = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [enquiryProduct, setEnquiryProduct] = useState(null);
-  const [selectedType, setSelectedType] = useState("all"); // 'all' | 'handheld' | 'fixed' | 'antenna'
-  const [selectedRange, setSelectedRange] = useState("all"); // 'all' | 'short' | 'long'
+  const [selectedType, setSelectedType] = useState("all"); 
+  const [selectedRange, setSelectedRange] = useState("all"); 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const { products, productsLoading, loadProducts } = useContent();
@@ -58,20 +58,19 @@ const RFIDHardware = () => {
 
   // Helper to categorize hardware dynamically
   const getHardwareType = (product) => {
+    if (product.specs?.type) return product.specs.type;
     const name = product.name.toLowerCase();
     const desc = (product.specs?.description || '').toLowerCase();
-    const feat = (product.specs?.main_features || '').toLowerCase();
     
-    if (name.includes('antenna') || desc.includes('antenna')) return 'antenna';
-    if (name.includes('fixed') || desc.includes('fixed') || name.includes('ura4') || name.includes('u300') || name.includes('r3') || name.includes('fx9600')) return 'fixed';
-    return 'handheld';
+    if (name.includes('antenna') || desc.includes('antenna')) return 'Antenna';
+    if (name.includes('fixed') || desc.includes('fixed') || name.includes('ura4') || name.includes('u300') || name.includes('r3') || name.includes('fx9600')) return 'Fixed Reader';
+    return 'Handheld Reader';
   };
 
   // Helper to check range
   const getRangeType = (product) => {
     const range = (product.specs?.read_range || '').toLowerCase();
     if (!range) return 'short';
-    // extract digits from range string
     const match = range.match(/\d+/);
     if (match) {
       const meters = parseInt(match[0], 10);
@@ -85,29 +84,17 @@ const RFIDHardware = () => {
     return products.filter(p => p.category === 'rfid-hardware');
   }, [products]);
 
-  // Compute counts for badges in filters
-  const filterCounts = useMemo(() => {
-    const counts = {
-      all: hardwareList.length,
-      handheld: 0,
-      fixed: 0,
-      antenna: 0,
-      rangeAll: hardwareList.length,
-      short: 0,
-      long: 0
-    };
-
+  // Extract unique subcategory types dynamically from active hardware products
+  const hardwareTypes = useMemo(() => {
+    const types = new Set();
     hardwareList.forEach(p => {
-      const type = getHardwareType(p);
-      const range = getRangeType(p);
-      
-      if (counts[type] !== undefined) counts[type]++;
-      if (counts[range] !== undefined) counts[range]++;
+      const t = getHardwareType(p);
+      if (t) types.add(t);
     });
-
-    return counts;
+    return Array.from(types).sort();
   }, [hardwareList]);
 
+  // Filtered products list
   const filteredProducts = useMemo(() => {
     return hardwareList.filter((product) => {
       // 1. Search Query filter
@@ -174,9 +161,10 @@ const RFIDHardware = () => {
       {/* Hero Header */}
       <section className="bg-slate-900 text-white py-16 px-5 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto text-center">
+          <span className="text-brand-orange uppercase text-xs tracking-[0.25em] font-extrabold mb-3 inline-block">Hardware Catalog</span>
           <h1 className="text-3xl md:text-5xl font-black tracking-tight">RFID Hardware Products</h1>
           <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
-            Explore our range of RFID tags, readers and tracking solutions.
+            Premium RFID handheld readers, long-range fixed readers, and specialized high-gain antennas.
           </p>
         </div>
       </section>
@@ -207,10 +195,8 @@ const RFIDHardware = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
             
-            {/* 1. FILTER SIDEBAR (Desktop: Visible, Mobile: Collapsible) */}
-            <aside className={`bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar ${
-              mobileFiltersOpen ? 'block' : 'hidden md:block'
-            }`}>
+            {/* 1. FILTER SIDEBAR */}
+            <aside className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
                   <SlidersHorizontal size={16} className="text-brand-orange" /> Filters
@@ -237,35 +223,51 @@ const RFIDHardware = () => {
                 />
               </div>
 
-              {/* Hardware Type Filter */}
+              {/* Hardware Type Filter (Dynamic) */}
               <div className="space-y-3">
                 <label className="block text-xs font-bold text-slate-500 uppercase">Product Type</label>
                 <div className="space-y-1.5">
-                  {[
-                    { key: 'all', label: 'All Hardware', count: filterCounts.all },
-                    { key: 'handheld', label: 'Handheld Readers', count: filterCounts.handheld },
-                    { key: 'fixed', label: 'Fixed Readers', count: filterCounts.fixed },
-                    { key: 'antenna', label: 'Antennas', count: filterCounts.antenna }
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      onClick={() => setSelectedType(item.key)}
-                      className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-                        selectedType === item.key
-                          ? 'bg-brand-blue text-white shadow-sm'
-                          : 'text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                        selectedType === item.key
-                          ? 'bg-white/20 text-white'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {item.count}
-                      </span>
-                    </button>
-                  ))}
+                  <button
+                    onClick={() => setSelectedType("all")}
+                    className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      selectedType === "all"
+                        ? 'bg-brand-blue text-white shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>All Hardware</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                      selectedType === "all"
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {hardwareList.length}
+                    </span>
+                  </button>
+
+                  {hardwareTypes.map((type) => {
+                    const count = hardwareList.filter(p => getHardwareType(p) === type).length;
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => setSelectedType(type)}
+                        className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                          selectedType === type
+                            ? 'bg-brand-blue text-white shadow-sm'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>{type}s</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                          selectedType === type
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -273,30 +275,50 @@ const RFIDHardware = () => {
               <div className="space-y-3 pt-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase">Read Range</label>
                 <div className="space-y-1.5">
+                  <button
+                    onClick={() => setSelectedRange("all")}
+                    className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      selectedRange === "all"
+                        ? 'bg-brand-blue text-white shadow-sm'
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>All Ranges</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                      selectedRange === "all"
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {hardwareList.length}
+                    </span>
+                  </button>
+
                   {[
-                    { key: 'all', label: 'All Ranges', count: filterCounts.rangeAll },
-                    { key: 'short', label: 'Short/Mid (< 8m)', count: filterCounts.short },
-                    { key: 'long', label: 'Long Range (8m+)', count: filterCounts.long }
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      onClick={() => setSelectedRange(item.key)}
-                      className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-                        selectedRange === item.key
-                          ? 'bg-brand-blue text-white shadow-sm'
-                          : 'text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span>{item.label}</span>
-                      <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                        selectedRange === item.key
-                          ? 'bg-white/20 text-white'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {item.count}
-                      </span>
-                    </button>
-                  ))}
+                    { key: 'short', label: 'Short/Mid (< 8m)' },
+                    { key: 'long', label: 'Long Range (8m+)' }
+                  ].map((item) => {
+                    const count = hardwareList.filter(p => getRangeType(p) === item.key).length;
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => setSelectedRange(item.key)}
+                        className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                          selectedRange === item.key
+                            ? 'bg-brand-blue text-white shadow-sm'
+                            : 'text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${
+                          selectedRange === item.key
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </aside>
@@ -352,7 +374,7 @@ const RFIDHardware = () => {
                         <div>
                           <div className="flex flex-wrap items-center gap-2 mb-3">
                             <span className="text-[10px] font-extrabold bg-brand-blue/15 text-brand-blue uppercase px-3 py-1 rounded-full tracking-wider">
-                              {getHardwareType(product)} Reader
+                              {getHardwareType(product)}
                             </span>
                             <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
                               {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
@@ -365,6 +387,7 @@ const RFIDHardware = () => {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                             {Object.entries(product.specs || {})
+                              .filter(([key]) => key !== "type")
                               .map(([key, value]) => (
                                 <p key={key} className="text-slate-700">
                                   <span className="font-semibold text-slate-950">

@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers } from 'l
 
 export default function ProductsManager() {
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ success: '', error: '' });
   const [filterCategory, setFilterCategory] = useState('all'); // 'all' | 'rfid-hardware' | 'rfid-tags'
   const [search, setSearch] = useState('');
@@ -90,7 +91,9 @@ export default function ProductsManager() {
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return;
     try {
+      setSaving(true);
       // Clean up empty specifications
       const cleanedSpecs = {};
       Object.entries(productForm.specs).forEach(([key, value]) => {
@@ -115,7 +118,14 @@ export default function ProductsManager() {
       }
       setProductModal({ show: false, mode: 'create', id: null });
     } catch (err) {
-      showStatus("", "Failed to save product. Ensure table exists in database.");
+      const errMsg = err.message || "";
+      if (errMsg.includes("unique_name_category") || errMsg.includes("duplicate key")) {
+        showStatus("", "A product with this name already exists in this category. Please use a unique name.");
+      } else {
+        showStatus("", errMsg || "Failed to save product.");
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -428,11 +438,11 @@ export default function ProductsManager() {
                 </button>
                 <button 
                   type="submit" 
-                  disabled={uploading}
-                  className="px-6 py-3 bg-brand-orange text-white rounded-xl text-sm font-bold hover:bg-brand-orange/90 shadow-md flex items-center gap-2"
+                  disabled={uploading || saving}
+                  className="px-6 py-3 bg-brand-orange text-white rounded-xl text-sm font-bold hover:bg-brand-orange/90 shadow-md flex items-center gap-2 disabled:opacity-50"
                 >
                   <Save size={16} />
-                  {productModal.mode === 'create' ? 'Publish Product' : 'Save Changes'}
+                  {saving ? 'Saving...' : (productModal.mode === 'create' ? 'Publish Product' : 'Save Changes')}
                 </button>
               </div>
             </form>

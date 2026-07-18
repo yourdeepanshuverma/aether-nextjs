@@ -207,7 +207,7 @@ const RFIDHardware = () => {
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
             
             {/* 1. FILTER SIDEBAR (Desktop: Visible, Mobile: Collapsible) */}
-            <aside className={`bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 ${
+            <aside className={`bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar ${
               mobileFiltersOpen ? 'block' : 'hidden md:block'
             }`}>
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">

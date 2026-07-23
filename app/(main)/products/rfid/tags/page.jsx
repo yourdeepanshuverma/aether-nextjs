@@ -71,6 +71,30 @@ const RFIDTags = () => {
     if (name.includes('traveler') || name.includes('rinse') || app.includes('windshield')) return 'Specialty Tag';
     return 'Smart Label / Inlay';
   };
+  // Helper to resolve tag datasheet URLs
+  const getDatasheetUrl = (product) => {
+    if (product.specs?.datasheet) return product.specs.datasheet;
+    const name = product.name.toLowerCase();
+    
+    if (name.includes("adept 4518")) return "/assets/datasheet/TagsDatasheet/ADEPT-4518.pdf";
+    if (name.includes("adept 7618")) return "/assets/datasheet/TagsDatasheet/ADEPT-7618.pdf";
+    if (name.includes("adept 9812")) return "/assets/datasheet/TagsDatasheet/ADEPT-9812.pdf";
+    if (name.includes("adept 2212")) return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO.pdf";
+    if (name.includes("adept 2211")) return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO-E.pdf";
+    if (name.includes("adept 5433")) return "/assets/datasheet/TagsDatasheet/ADEPT-5433.pdf";
+    if (name.includes("traveler") || name.includes("traveller")) return "/assets/datasheet/TagsDatasheet/ADEPT-TRAVELLER.pdf";
+    
+    if (name.includes("pcb 5507")) return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-5507.pdf";
+    if (name.includes("pcb 1307")) return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-1307.pdf";
+    if (name.includes("ridge 15025")) return "/assets/datasheet/TagsDatasheet/Ridge-M15025.pdf";
+    if (name.includes("ridge 11025")) return "/assets/datasheet/TagsDatasheet/RIDGE-F11020.pdf";
+    
+    if (name.includes("regalia 3515") || name.includes("regalia 4515")) return "/assets/datasheet/TagsDatasheet/REGALIA-3515.pdf";
+    if (name.includes("regalia 5030") || name.includes("regalia 6525")) return "/assets/datasheet/TagsDatasheet/REGALIA-6525.pdf";
+    if (name.includes("mist")) return "/assets/datasheet/TagsDatasheet/MIST-6025.pdf";
+    
+    return null;
+  };
 
   // Filter products by tags category
   const tagsList = useMemo(() => {
@@ -335,9 +359,9 @@ const RFIDTags = () => {
                             {product.name}
                           </h3>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                             {Object.entries(product.specs || {})
-                              .filter(([key]) => key !== "type")
+                              .filter(([key]) => key !== "type" && key !== "datasheet")
                               .map(([key, value]) => (
                                 <p key={key} className="text-slate-700">
                                   <span className="font-semibold text-slate-950">
@@ -354,13 +378,23 @@ const RFIDTags = () => {
                               ))}
                           </div>
 
-                          <div className="mt-6 pt-6 border-t border-slate-100">
+                          <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap gap-4">
                             <button
                               onClick={() => setEnquiryProduct(product)}
                               className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
                             >
                               Enquire Now
                             </button>
+                            {getDatasheetUrl(product) && (
+                              <a
+                                href={getDatasheetUrl(product)}
+                                download
+                                className="inline-flex items-center gap-2 px-8 py-3 border border-slate-200 text-slate-700 hover:text-brand-blue hover:border-brand-blue font-bold rounded-full transition-all text-xs"
+                              >
+                                <Download size={14} />
+                                Datasheet
+                              </a>
+                            )}
                           </div>
                         </div>
                       </div>

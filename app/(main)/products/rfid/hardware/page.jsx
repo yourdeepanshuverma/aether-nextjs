@@ -458,7 +458,7 @@ const RFIDHardware = () => {
                 >
                   Contact Us Now
                 </Link>
-                <a
+                {/* <a
                   href="/assets/RFID%20products/ReadersCatalogue.pptx"
                   download
                   className="w-full sm:w-auto group flex items-center justify-center gap-3 bg-white/5 backdrop-blur-md border border-white/20 text-white tracking-wide font-medium px-12 py-5 rounded-2xl hover:bg-white/10 transition-all"
@@ -468,7 +468,7 @@ const RFIDHardware = () => {
                     className="group-hover:translate-y-1 transition-transform"
                   />
                   Download Datasheets
-                </a>
+                </a> */}
               </div>
 
               <p className="mt-8 text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">

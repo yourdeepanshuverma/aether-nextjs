@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers } from 'l
 
 export default function ProductsManager() {
   const [uploading, setUploading] = useState(false);
+  const [pdfUploading, setPdfUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ success: '', error: '' });
   const [filterCategory, setFilterCategory] = useState('all'); // 'all' | 'rfid-hardware' | 'rfid-tags'
@@ -85,6 +86,44 @@ export default function ProductsManager() {
       alert('Failed to upload image: ' + error.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handlePdfUpload = async (e, callback) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+      alert('Please select a valid PDF file.');
+      return;
+    }
+
+    try {
+      setPdfUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `datasheets/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) throw error;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
+      callback(publicUrlData.publicUrl);
+      showStatus("Datasheet PDF uploaded successfully!");
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      alert('Failed to upload PDF: ' + error.message);
+    } finally {
+      setPdfUploading(false);
     }
   };
 
@@ -171,7 +210,8 @@ export default function ProductsManager() {
     { key: 'operating_system', label: 'Operating System', placeholder: 'e.g. Android 11' },
     { key: 'operating_temperature', label: 'Operating Temperature', placeholder: 'e.g. -20C to 55C' },
     { key: 'max_reciever_sensitivity', label: 'Max Receiver Sensitivity', placeholder: 'e.g. 86dBm' },
-    { key: 'moq', label: 'MOQ (Min Order Qty)', placeholder: 'e.g. 1' }
+    { key: 'moq', label: 'MOQ (Min Order Qty)', placeholder: 'e.g. 1' },
+    { key: 'datasheet', label: 'Datasheet URL', placeholder: 'e.g. /assets/datasheet/TagsDatasheet/ADEPT-4518.pdf' }
   ];
 
   const tagsSpecFields = [
@@ -188,7 +228,8 @@ export default function ProductsManager() {
     { key: 'form_factor', label: 'Form Factor', placeholder: 'e.g. Coin, Wet Inlay, Label' },
     { key: 'personalisation', label: 'Personalization', placeholder: 'e.g. Yes' },
     { key: 'out_body', label: 'Outer Body Material', placeholder: 'e.g. ABS, PCB, PVC' },
-    { key: 'fixing_mechanism', label: 'Fixing Mechanism', placeholder: 'e.g. Adhesive, Stitch, Screw' }
+    { key: 'fixing_mechanism', label: 'Fixing Mechanism', placeholder: 'e.g. Adhesive, Stitch, Screw' },
+    { key: 'datasheet', label: 'Datasheet URL', placeholder: 'e.g. /assets/datasheet/TagsDatasheet/ADEPT-4518.pdf' }
   ];
 
   // Filtering products
@@ -445,6 +486,21 @@ export default function ProductsManager() {
                         placeholder={field.placeholder}
                         className="w-full px-3 py-2 text-xs bg-white rounded-lg border border-gray-200 focus:outline-none"
                       />
+                      {field.key === 'datasheet' && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <input 
+                            type="file" 
+                            accept=".pdf"
+                            disabled={pdfUploading}
+                            onChange={(e) => handlePdfUpload(e, (url) => setProductForm({
+                              ...productForm,
+                              specs: { ...productForm.specs, datasheet: url }
+                            }))}
+                            className="text-[9px] text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
+                          />
+                          {pdfUploading && <span className="text-[9px] text-brand-orange animate-pulse">Uploading...</span>}
+                        </div>
+                      )}
                     </div>
                   ))}
 
@@ -464,6 +520,21 @@ export default function ProductsManager() {
                         placeholder={field.placeholder}
                         className="w-full px-3 py-2 text-xs bg-white rounded-lg border border-gray-200 focus:outline-none"
                       />
+                      {field.key === 'datasheet' && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <input 
+                            type="file" 
+                            accept=".pdf"
+                            disabled={pdfUploading}
+                            onChange={(e) => handlePdfUpload(e, (url) => setProductForm({
+                              ...productForm,
+                              specs: { ...productForm.specs, datasheet: url }
+                            }))}
+                            className="text-[9px] text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
+                          />
+                          {pdfUploading && <span className="text-[9px] text-brand-orange animate-pulse">Uploading...</span>}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

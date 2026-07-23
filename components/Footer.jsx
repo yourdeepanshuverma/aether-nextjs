@@ -1,9 +1,6 @@
 "use client";
-"use client";
-"use client";
-"use client";
-"use client";
 import Link from "next/link";
+import { useContent } from "@/context/ContentContext";
 
 const LinkedInIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,6 +24,27 @@ const YoutubeIcon = ({ size = 18 }) => (
 );
 
 const Footer = () => {
+  const { getContent } = useContent();
+
+  const footerData = getContent("footer", {
+    title: "Footer Config",
+    subtitle: "Aether Footer Configuration",
+    content: {
+      copyright: "Copyright © 2026 AETHER RFID. All rights reserved",
+      linkedin: "#",
+      twitter: "#",
+      youtube: "#",
+      corpAddress: "211, 3rd Floor, Okhla Industrial Estate, Phase 3, New Delhi-110020.",
+      corpContact: "+91-7042436155",
+      rdAddress: "B-185, 2nd Floor, Okhla Industrial Area, Phase 1, New Delhi-110020.",
+      rdContact: "+91-7070543479",
+      branchAddress: "164/10, 3rd Floor, Dutta Mart, Near Udayan Club, Kolkata, West Bengal, 700061.",
+      branchContact: "+91-7488196939"
+    }
+  });
+
+  const content = footerData;
+
   const sections = [
     {
       title: "Industries",
@@ -62,20 +80,20 @@ const Footer = () => {
     {
       title: "Corporate Office",
       company: "AETHER RFID TECHNOLOGIES PVT LTD.",
-      address: "211, 3rd Floor, Okhla Industrial Estate, Phase 3, New Delhi-110020.",
-      contact: "+91-7042436155",
+      address: content.corpAddress || "211, 3rd Floor, Okhla Industrial Estate, Phase 3, New Delhi-110020.",
+      contact: content.corpContact || "+91-7042436155",
     },
     {
       title: "Production & R&D Center",
       company: "AETHER RFID TECHNOLOGIES PVT LTD.",
-      address: "B-185, 2nd Floor, Okhla Industrial Area, Phase 1, New Delhi-110020.",
-      contact: "+91-7070543479",
+      address: content.rdAddress || "B-185, 2nd Floor, Okhla Industrial Area, Phase 1, New Delhi-110020.",
+      contact: content.rdContact || "+91-7070543479",
     },
     {
       title: "Branch Office",
       company: "AETHER RFID TECHNOLOGIES PVT LTD.",
-      address: "164/10, 3rd Floor, Dutta Mart, Near Udayan Club, Kolkata, West Bengal, 700061.",
-      contact: "+91-7488196939",
+      address: content.branchAddress || "164/10, 3rd Floor, Dutta Mart, Near Udayan Club, Kolkata, West Bengal, 700061.",
+      contact: content.branchContact || "+91-7488196939",
     },
   ];
 
@@ -99,13 +117,13 @@ const Footer = () => {
 
             {/* Social Icons */}
             <div className="flex gap-4">
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
                 <LinkedInIcon size={18} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.twitter || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
                 <TwitterIcon size={18} />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.youtube || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
                 <YoutubeIcon size={18} />
               </a>
             </div>
@@ -149,7 +167,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">
-            Copyright © 2026 AETHER RFID. All rights reserved
+            {content.copyright || "Copyright © 2026 AETHER RFID. All rights reserved"}
           </p>
           <div className="flex flex-wrap justify-center gap-4 md:gap-8">
             {["Cookies", "Disclaimer", "Privacy Policies", "Site Map", "Terms"].map((item, i) => (

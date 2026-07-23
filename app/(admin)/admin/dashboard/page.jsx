@@ -56,7 +56,7 @@ export default function PageContentEditor() {
 
   const heroDefaults = getContent("home-hero", {
     title: "Aether-RFID Pioneering Innovation in RFID and IoT Solutions",
-    subtitle: "At Aether-RFID, our mission is to deliver cost-effective, high-quality RFID and IoT solutions...",
+    subtitle: "At Aether-RFID, our mission is to deliver cost-effective, high-quality RFID and IoT solutions that solve modern business connectivity challenges.",
     content: { buttonText: "Explore our products", videoUrl: "/assets/aether-rfid-one.mp4" }
   });
 
@@ -64,11 +64,11 @@ export default function PageContentEditor() {
     title: "Driving Innovation Through Technology",
     subtitle: "About Aether",
     content: {
-      description: "Aether is a global leader...",
+      description: "Aether is a global leader in providing end-to-end IoT, RFID, and digital transformation solutions...",
       missionTitle: "Our Mission",
-      missionDesc: "To empower enterprises...",
+      missionDesc: "To empower enterprises with real-time operations visibility...",
       visionTitle: "Our Vision",
-      visionDesc: "To be the catalyst...",
+      visionDesc: "To build a seamlessly connected infrastructure...",
       buttonText: "Learn More About Us",
       imageUrl: "/assets/about-2.webp"
     }
@@ -98,19 +98,19 @@ export default function PageContentEditor() {
     setHeroForm({
       title: heroDefaults.title,
       subtitle: heroDefaults.subtitle,
-      buttonText: heroDefaults.buttonText || "Explore our products",
-      videoUrl: heroDefaults.videoUrl || "/assets/aether-rfid-one.mp4"
+      buttonText: heroDefaults.buttonText || heroDefaults.content?.buttonText || "Explore our products",
+      videoUrl: heroDefaults.videoUrl || heroDefaults.content?.videoUrl || "/assets/aether-rfid-one.mp4"
     });
     setAboutForm({
       title: aboutDefaults.title,
       subtitle: aboutDefaults.subtitle,
-      description: aboutDefaults.description || "",
-      missionTitle: aboutDefaults.missionTitle || "Our Mission",
-      missionDesc: aboutDefaults.missionDesc || "",
-      visionTitle: aboutDefaults.visionTitle || "Our Vision",
-      visionDesc: aboutDefaults.visionDesc || "",
-      buttonText: aboutDefaults.buttonText || "Learn More About Us",
-      imageUrl: aboutDefaults.imageUrl || "/assets/about-2.webp"
+      description: aboutDefaults.description || aboutDefaults.content?.description || "",
+      missionTitle: aboutDefaults.missionTitle || aboutDefaults.content?.missionTitle || "Our Mission",
+      missionDesc: aboutDefaults.missionDesc || aboutDefaults.content?.missionDesc || "",
+      visionTitle: aboutDefaults.visionTitle || aboutDefaults.content?.visionTitle || "Our Vision",
+      visionDesc: aboutDefaults.visionDesc || aboutDefaults.content?.visionDesc || "",
+      buttonText: aboutDefaults.buttonText || aboutDefaults.content?.buttonText || "Learn More About Us",
+      imageUrl: aboutDefaults.imageUrl || aboutDefaults.content?.imageUrl || "/assets/about-2.webp"
     });
   }, [siteContent]); // reload trigger
 

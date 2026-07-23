@@ -10,7 +10,8 @@ import {
   Mail, 
   LogOut, 
   Menu,
-  Package
+  Package,
+  Settings
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -33,6 +34,7 @@ export default function DashboardLayout({ children }) {
     { name: 'Manage Products', path: '/admin/dashboard/products', icon: Package },
     { name: 'Manage Blogs', path: '/admin/dashboard/blogs', icon: FileText },
     { name: 'Manage Team', path: '/admin/dashboard/team', icon: Users },
+    { name: 'Manage Footer', path: '/admin/dashboard/footer', icon: Settings },
     { name: 'Inquiries', path: '/admin/dashboard/contacts', icon: Mail, badge: contacts.length },
   ];
 

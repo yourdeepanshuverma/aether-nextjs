@@ -471,9 +471,9 @@ const RFIDHardware = () => {
                 </a> */}
               </div>
 
-              <p className="mt-8 text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">
+              {/* <p className="mt-8 text-sm text-gray-500 font-medium uppercase tracking-[0.2em]">
                 PDF • Latest Revision • 2024
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
-import { Cpu, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw } from "lucide-react";
+import { Cpu, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw, LayoutGrid, List, Table } from "lucide-react";
 
 const RFIDHardware = () => {
   const [search, setSearch] = useState("");
@@ -11,6 +11,7 @@ const RFIDHardware = () => {
   const [selectedType, setSelectedType] = useState("all"); 
   const [selectedRange, setSelectedRange] = useState("all"); 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState("list"); // 'grid' or 'list'
 
   const { products, productsLoading, loadProducts } = useContent();
 
@@ -329,68 +330,158 @@ const RFIDHardware = () => {
               {/* Filter Results header */}
               <div className="flex justify-between items-center bg-white border border-slate-200/60 p-4 px-6 rounded-2xl shadow-sm text-xs font-semibold text-slate-500">
                 <span>Showing {filteredProducts.length} hardware products</span>
-                {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
-                  <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
-                    Filters Active
-                  </span>
-                )}
+                <div className="flex items-center gap-4">
+                  {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
+                    <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
+                      Filters Active
+                    </span>
+                  )}
+                  {/* Viewport switchers */}
+                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("grid")}
+                      className={`p-1.5 rounded-lg transition-all ${
+                        viewMode === "grid" 
+                          ? "bg-white text-brand-blue shadow-sm" 
+                          : "text-slate-400 hover:text-slate-600"
+                      }`}
+                      title="Grid View"
+                    >
+                      <LayoutGrid size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("list")}
+                      className={`p-1.5 rounded-lg transition-all ${
+                        viewMode === "list" 
+                          ? "bg-white text-brand-blue shadow-sm" 
+                          : "text-slate-400 hover:text-slate-600"
+                      }`}
+                      title="List View"
+                    >
+                      <List size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("table")}
+                      className={`p-1.5 rounded-lg transition-all ${
+                        viewMode === "table" 
+                          ? "bg-white text-brand-blue shadow-sm" 
+                          : "text-slate-400 hover:text-slate-600"
+                      }`}
+                      title="Table View"
+                    >
+                      <Table size={15} />
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Cards list */}
-              <div className="space-y-6">
-                {filteredProducts.map((product, index) => {
-                  const labels = {
-                    description: "Description",
-                    frequency: "Frequency",
-                    polarisation: "Polarisation",
-                    operating_system: "Operating System",
-                    operating_temperature: "Operating Temperature",
-                    read_range: "Read Range",
-                    read_capacity: "Read Capacity",
-                    application: "Application",
-                    main_features: "Main Features",
-                    max_reciever_sensitivity: "Max Receiver Sensitivity",
-                    extension: "Extension",
-                    moq: "MOQ",
-                  };
+              {/* Cards list/grid/table viewport */}
+              {viewMode === "table" ? (
+                <div className="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-150 text-slate-500 font-bold uppercase tracking-wider">
+                          <th className="p-4 pl-6">Product</th>
+                          <th className="p-4">Type</th>
+                          <th className="p-4">Read Range</th>
+                          <th className="p-4">Frequency</th>
+                          <th className="p-4 text-right pr-6">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                        {filteredProducts.map((product, index) => (
+                          <tr key={product.id || index} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="p-4 pl-6 font-semibold text-slate-900">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center p-1 shrink-0">
+                                  <img
+                                    src={product.image || "/assets/placeholder-product.png"}
+                                    alt={product.name}
+                                    className="max-h-full max-w-full object-contain"
+                                  />
+                                </div>
+                                <span>{product.name}</span>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <span className="text-[10px] font-extrabold bg-brand-blue/10 text-brand-blue uppercase px-2 py-0.5 rounded-full">
+                                {getHardwareType(product)}
+                              </span>
+                            </td>
+                            <td className="p-4">{product.specs?.read_range || 'N/A'}</td>
+                            <td className="p-4">{product.specs?.frequency || 'N/A'}</td>
+                            <td className="p-4 text-right pr-6">
+                              <button
+                                onClick={() => setEnquiryProduct(product)}
+                                className="px-4 py-2 bg-brand-green text-white font-bold rounded-lg hover:opacity-90 transition-all text-[10px]"
+                              >
+                                Enquire
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {filteredProducts.map((product, index) => {
+                    const labels = {
+                      description: "Description",
+                      frequency: "Frequency",
+                      polarisation: "Polarisation",
+                      operating_system: "Operating System",
+                      operating_temperature: "Operating Temperature",
+                      read_range: "Read Range",
+                      read_capacity: "Read Capacity",
+                      application: "Application",
+                      main_features: "Main Features",
+                      max_reciever_sensitivity: "Max Receiver Sensitivity",
+                      extension: "Extension",
+                      moq: "MOQ",
+                    };
 
-                  return (
-                    <div
-                      key={product.id || index}
-                      className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
-                    >
-                      <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-center">
-                        
-                        {/* Product Image */}
-                        <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
-                          <img
-                            src={product.image || "/assets/placeholder-product.png"}
-                            alt={product.name}
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
-
-                        {/* Product Details */}
+                    return (
+                      <div
+                        key={product.id || index}
+                        className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between"
+                      >
                         <div>
-                          <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <span className="text-[10px] font-extrabold bg-brand-blue/15 text-brand-blue uppercase px-3 py-1 rounded-full tracking-wider">
+                          {/* Product Image */}
+                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[200px] items-center border border-slate-100 mb-4">
+                            <img
+                              src={product.image || "/assets/placeholder-product.png"}
+                              alt={product.name}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          </div>
+
+                          {/* Product Details */}
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="text-[9px] font-extrabold bg-brand-blue/15 text-brand-blue uppercase px-2.5 py-0.5 rounded-full tracking-wider">
                               {getHardwareType(product)}
                             </span>
-                            <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                            <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full">
                               {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
                             </span>
                           </div>
 
-                          <h3 className="text-xl md:text-2xl font-extrabold text-slate-900 mb-5 tracking-tight">
+                          <h3 className="text-lg font-extrabold text-slate-900 mb-3 tracking-tight truncate" title={product.name}>
                             {product.name}
                           </h3>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                          <div className="space-y-1 text-xs">
                             {Object.entries(product.specs || {})
                               .filter(([key]) => key !== "type")
+                              .slice(0, 4)
                               .map(([key, value]) => (
-                                <p key={key} className="text-slate-700">
-                                  <span className="font-semibold text-slate-950">
+                                <p key={key} className="text-slate-600 truncate">
+                                  <span className="font-semibold text-slate-900">
                                     {labels[key] ||
                                       key
                                         .replace(/_/g, " ")
@@ -403,27 +494,108 @@ const RFIDHardware = () => {
                                 </p>
                               ))}
                           </div>
+                        </div>
 
-                          <div className="mt-6 pt-6 border-t border-slate-100">
-                            <button
-                              onClick={() => setEnquiryProduct(product)}
-                              className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
-                            >
-                              Enquire Now
-                            </button>
+                        <div className="mt-5 pt-4 border-t border-slate-100">
+                          <button
+                            onClick={() => setEnquiryProduct(product)}
+                            className="w-full py-2.5 bg-brand-green text-white font-bold rounded-xl hover:opacity-90 transition-all text-xs"
+                          >
+                            Enquire Now
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {filteredProducts.map((product, index) => {
+                    const labels = {
+                      description: "Description",
+                      frequency: "Frequency",
+                      polarisation: "Polarisation",
+                      operating_system: "Operating System",
+                      operating_temperature: "Operating Temperature",
+                      read_range: "Read Range",
+                      read_capacity: "Read Capacity",
+                      application: "Application",
+                      main_features: "Main Features",
+                      max_reciever_sensitivity: "Max Receiver Sensitivity",
+                      extension: "Extension",
+                      moq: "MOQ",
+                    };
+
+                    return (
+                      <div
+                        key={product.id || index}
+                        className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
+                      >
+                        <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-center">
+                          {/* Product Image */}
+                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
+                            <img
+                              src={product.image || "/assets/placeholder-product.png"}
+                              alt={product.name}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          </div>
+
+                          {/* Product Details */}
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                              <span className="text-[10px] font-extrabold bg-brand-blue/15 text-brand-blue uppercase px-3 py-1 rounded-full tracking-wider">
+                                {getHardwareType(product)}
+                              </span>
+                              <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                                {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
+                              </span>
+                            </div>
+
+                            <h3 className="text-xl md:text-2xl font-extrabold text-slate-900 mb-5 tracking-tight">
+                              {product.name}
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                              {Object.entries(product.specs || {})
+                                .filter(([key]) => key !== "type")
+                                .map(([key, value]) => (
+                                  <p key={key} className="text-slate-700">
+                                    <span className="font-semibold text-slate-950">
+                                      {labels[key] ||
+                                        key
+                                          .replace(/_/g, " ")
+                                          .replace(/\b\w/g, (char) =>
+                                            char.toUpperCase(),
+                                          )}
+                                      :
+                                    </span>{" "}
+                                    {value}
+                                  </p>
+                                ))}
+                            </div>
+
+                            <div className="mt-6 pt-6 border-t border-slate-100">
+                              <button
+                                onClick={() => setEnquiryProduct(product)}
+                                className="px-8 py-3 bg-brand-green text-white font-bold rounded-full hover:opacity-90 transition-all text-xs"
+                              >
+                                Enquire Now
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              )}
 
-                {filteredProducts.length === 0 && (
-                  <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 text-slate-400 font-medium">
-                    No RFID hardware products found matching your active filters.
-                  </div>
-                )}
-              </div>
+              {filteredProducts.length === 0 && (
+                <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 text-slate-400 font-medium">
+                  No RFID hardware products found matching your active filters.
+                </div>
+              )}
             </main>
           </div>
         </div>

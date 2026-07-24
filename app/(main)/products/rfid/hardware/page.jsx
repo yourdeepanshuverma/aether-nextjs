@@ -12,6 +12,7 @@ const RFIDHardware = () => {
   const [selectedRange, setSelectedRange] = useState("all"); 
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'grid' or 'list'
+  const [sortBy, setSortBy] = useState("asc"); // 'asc' (A to Z) or 'desc' (Z to A)
 
   const { products, productsLoading, loadProducts } = useContent();
 
@@ -97,7 +98,7 @@ const RFIDHardware = () => {
 
   // Filtered products list
   const filteredProducts = useMemo(() => {
-    return hardwareList.filter((product) => {
+    const list = hardwareList.filter((product) => {
       // 1. Search Query filter
       const matchesSearch = 
         product.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -112,12 +113,21 @@ const RFIDHardware = () => {
 
       return matchesSearch && matchesType && matchesRange;
     });
-  }, [hardwareList, search, selectedType, selectedRange]);
+
+    return list.sort((a, b) => {
+      if (sortBy === "asc") {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    });
+  }, [hardwareList, search, selectedType, selectedRange, sortBy]);
 
   const resetFilters = () => {
     setSearch("");
     setSelectedType("all");
     setSelectedRange("all");
+    setSortBy("asc");
   };
 
   if (productsLoading) {
@@ -222,6 +232,19 @@ const RFIDHardware = () => {
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
                 />
+              </div>
+
+              {/* Sort Order */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-500 uppercase">Sort Order</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue bg-white transition-all cursor-pointer"
+                >
+                  <option value="asc">Alphabetical: A to Z</option>
+                  <option value="desc">Alphabetical: Z to A</option>
+                </select>
               </div>
 
               {/* Hardware Type Filter (Dynamic) */}

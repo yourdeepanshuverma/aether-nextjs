@@ -209,7 +209,7 @@ const RFIDTags = () => {
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
             
             {/* 1. FILTER SIDEBAR */}
-            <aside className="bg-slate-50 border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 sticky top-24 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+            <aside className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block bg-slate-50 border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 md:sticky md:top-24 md:max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar`}>
               <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                 <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
                   <SlidersHorizontal size={16} className="text-brand-orange" /> Filters

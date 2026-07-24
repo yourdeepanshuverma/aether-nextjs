@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, ChevronDown, ChevronRight, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 
@@ -9,6 +9,34 @@ const Header = () => {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [dropdown, setDropdown] = useState(null);
   const [activeSubmenu, setActiveSubmenu] = useState(null);
+
+  // Accessibility Font Scale state
+  const [fontScale, setFontScale] = useState(100);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedScale = localStorage.getItem("global-font-scale");
+      if (savedScale) {
+        const parsed = parseInt(savedScale, 10);
+        if (!isNaN(parsed) && parsed >= 80 && parsed <= 130) {
+          setFontScale(parsed);
+          document.documentElement.style.fontSize = `${parsed}%`;
+        }
+      }
+    }
+  }, []);
+
+  const changeFontScale = (newScale) => {
+    if (newScale >= 80 && newScale <= 130) {
+      setFontScale(newScale);
+      document.documentElement.style.fontSize = `${newScale}%`;
+      localStorage.setItem("global-font-scale", newScale.toString());
+    }
+  };
+
+  const increaseFontSize = () => changeFontScale(fontScale + 10);
+  const decreaseFontSize = () => changeFontScale(fontScale - 10);
+  const resetFontSize = () => changeFontScale(100);
 
   const fallbackNavItems = [
     {
@@ -74,7 +102,55 @@ const Header = () => {
   const navItems = getContent("header-nav", { items: fallbackNavItems }).items || fallbackNavItems;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#ffffff]/90 backdrop-blur-md text-brand-blue border-b border-white/10">
+    <header className="sticky top-0 z-50 w-full bg-[#ffffff]/95 backdrop-blur-md text-brand-blue border-b border-slate-200/50">
+      {/* Top Info & Accessibility Bar */}
+      <div className="bg-[#0f172a] text-slate-300 border-b border-white/10 select-none">
+        <div className="max-w-[1400px] mx-auto px-5 lg:px-10 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-semibold">
+          {/* Company Mail & Mobile */}
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <a href="mailto:info@aetherrfid.com" className="flex items-center gap-2 hover:text-[#ffffff] transition-colors text-[11px] sm:text-xs">
+              <Mail size={12} className="text-brand-orange" />
+              <span>info@aetherrfid.com</span>
+            </a>
+            <a href="tel:+917042436155" className="flex items-center gap-2 hover:text-[#ffffff] transition-colors text-[11px] sm:text-xs">
+              <Phone size={12} className="text-brand-orange" />
+              <span>+91-7042436155</span>
+            </a>
+          </div>
+
+          {/* Text Size Accessibility Controls */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Text Size:</span>
+            <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
+              <button
+                type="button"
+                onClick={decreaseFontSize}
+                className="w-5 h-5 rounded bg-white/5 hover:bg-white/15 active:bg-white/25 flex items-center justify-center font-bold text-[9px] text-slate-200 transition-colors"
+                title="Decrease Font Size (A-)"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                onClick={resetFontSize}
+                className="w-5 h-5 rounded bg-white/5 hover:bg-white/15 active:bg-white/25 flex items-center justify-center font-bold text-[9px] text-slate-200 transition-colors"
+                title="Reset Font Size (A)"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                onClick={increaseFontSize}
+                className="w-5 h-5 rounded bg-white/5 hover:bg-white/15 active:bg-white/25 flex items-center justify-center font-bold text-[9px] text-slate-200 transition-colors"
+                title="Increase Font Size (A+)"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-[1400px] mx-auto px-5 lg:px-10">
         <div className="flex items-center justify-between h-[80px]">
           {/* Logo */}
@@ -266,6 +342,7 @@ const Header = () => {
           </div>
         </div>
       </div>
+
     </header>
   );
 };

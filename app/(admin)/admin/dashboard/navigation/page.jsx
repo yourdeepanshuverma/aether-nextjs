@@ -66,7 +66,12 @@ export default function NavigationMenuEditor() {
     },
     {
       name: "Industry",
-      dropdown: ["Retail", "Factory Automation", "Logistics", "E-commerce/Quick Commerce"],
+      dropdown: [
+        { name: "Retail", path: "/industries/retail" },
+        { name: "Factory Automation", path: "/industries/factory-automation" },
+        { name: "Logistics", path: "/industries/logistics" },
+        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce" }
+      ],
     },
     {
       name: "Blogs",

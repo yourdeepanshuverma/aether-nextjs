@@ -30,19 +30,19 @@ const CaseStudies = () => {
         { label: "Errors", value: "-95%" }
       ]
     },
-    {
-      id: 3,
-      title: "Healthcare Asset Tracking",
-      client: "City General Hospital",
-      impact: "Instant Equipment Location",
-      description: "Deploying active RFID tags to track critical medical equipment, reducing search time for nurses and improving patient care response.",
-      image: "/assets/case-studies/Healthcare-Tracking.jpg",
-      tags: ["Healthcare", "Asset Tracking"],
-      stats: [
-        { label: "Search Time", value: "-90%" },
-        { label: "ROI", value: "12 Months" }
-      ]
-    }
+    // {
+    //   id: 3,
+    //   title: "Healthcare Asset Tracking",
+    //   client: "City General Hospital",
+    //   impact: "Instant Equipment Location",
+    //   description: "Deploying active RFID tags to track critical medical equipment, reducing search time for nurses and improving patient care response.",
+    //   image: "/assets/case-studies/Healthcare-Tracking.jpg",
+    //   tags: ["Healthcare", "Asset Tracking"],
+    //   stats: [
+    //     { label: "Search Time", value: "-90%" },
+    //     { label: "ROI", value: "12 Months" }
+    //   ]
+    // }
   ];
 
   return (
@@ -73,7 +73,7 @@ const CaseStudies = () => {
         <div className="max-w-[1200px] mx-auto px-5">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
-              { icon: <Globe />, label: "Global Deployments", value: "1200+" },
+              { icon: <Globe />, label: "Global Deployments", value: "50+" },
               { icon: <Zap />, label: "Efficiency Increase", value: "45%" },
               { icon: <Shield />, label: "Data Accuracy", value: "99.9%" },
               { icon: <BarChart3 />, label: "Client ROI", value: "Avg 14mo" }

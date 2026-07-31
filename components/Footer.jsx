@@ -49,29 +49,30 @@ const Footer = () => {
     {
       title: "Industries",
       links: [
-        { name: "Retail", path: "/" },
-        { name: "Factory Automation", path: "/" },
-        { name: "Logistics", path: "/" },
-        { name: "E-commerce", path: "/" },
-        { name: "Quick Commerce", path: "/" },
+        { name: "Retail", path: "/industries/retail" },
+        { name: "Manufacturing", path: "/industries/manufacturing" },
+        { name: "Logistics & Supply chain", path: "/industries/logistics" },
+        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce" },
+        { name: "Renewable Energy", path: "/industries/renewable-energy" },
       ],
     },
     {
       title: "Products",
       links: [
-        { name: "RFID", path: "/" },
-        { name: "IOT", path: "/" },
-        { name: "Software Solution", path: "/" },
+        { name: "RFID Hardware", path: "/products/rfid/hardware" },
+        { name: "RFID Tags", path: "/products/rfid/tags" },
+        { name: "IoT Devices", path: "/products/iot/data-loggers" },
+        { name: "Software Solutions", path: "/products/software/retail-automation" },
       ],
     },
     {
       title: "Company",
       links: [
-        { name: "About Us", path: "/" },
-        { name: "Contact", path: "/contact" },
-        { name: "Management", path: "/" },
+        { name: "About Us", path: "/about/company-overview" },
+        { name: "Team", path: "/about/team" },
+        { name: "Careers", path: "/about/career" },
         { name: "Blogs", path: "/blogs" },
-        { name: "Careers", path: "/" },
+        { name: "Contact Us", path: "/contact" },
       ],
     },
   ];

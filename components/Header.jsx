@@ -90,8 +90,9 @@ const Header = () => {
       dropdown: [
         { name: "Retail", path: "/industries/retail" },
         { name: "Manufacturing", path: "/industries/manufacturing" },
-        { name: "Logistics", path: "/industries/logistics" },
-        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce" }
+        { name: "Logistics & Supply chain", path: "/industries/logistics" },
+        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce" },
+        { name: "Renewable Energy", path: "/industries/renewable-energy" }
       ],
     },
     {

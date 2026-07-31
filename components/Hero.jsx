@@ -1,8 +1,5 @@
 "use client";
-"use client";
-"use client";
-"use client";
-"use client";
+import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 
 const Hero = () => {
@@ -51,13 +48,15 @@ const Hero = () => {
           {heroContent.subtitle}
         </p>
 
-        <button className="bg-brand-orange border-2 border-brand-orange text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-[#ffffff] hover:text-brand-orange hover:scale-105 transition-all duration-300">
+        <Link 
+          href="/products/rfid/hardware"
+          className="bg-brand-orange border-2 border-brand-orange text-white font-bold px-8 py-4 rounded-full text-lg hover:bg-[#ffffff] hover:text-brand-orange hover:scale-105 transition-all duration-300 inline-block"
+        >
           {buttonText}
-        </button>
+        </Link>
       </div>
     </section>
   );
 };
 
 export default Hero;
-

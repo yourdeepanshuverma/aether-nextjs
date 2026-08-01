@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
-import { Save, Plus, Trash2, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { Save, Plus, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function NavigationMenuEditor() {
   const [statusMessage, setStatusMessage] = useState({ success: '', error: '' });
@@ -20,66 +20,74 @@ export default function NavigationMenuEditor() {
   const fallbackNavItems = [
     {
       name: "About Us",
+      enabled: true,
       dropdown: [
-        { name: "Our Company", path: "/about/company-overview" },
-        { name: "Team", path: "/about/team" },
-        { name: "Careers", path: "/about/career" }
+        { name: "Our Company", path: "/about/company-overview", enabled: true },
+        { name: "Team", path: "/about/team", enabled: true },
+        { name: "Careers", path: "/about/career", enabled: true }
       ],
     },
     {
       name: "Technologies",
+      enabled: true,
       dropdown: [
-        { name: "RFID", path: "/technologies/rfid" },
-        { name: "IOT", path: "/technologies/iot" },
-        { name: "Barcodes", path: "/technologies/barcodes" }
+        { name: "RFID", path: "/technologies/rfid", enabled: true },
+        { name: "IOT", path: "/technologies/iot", enabled: true },
+        { name: "Barcodes", path: "/technologies/barcodes", enabled: true }
       ],
     },
     {
       name: "Products",
+      enabled: true,
       dropdown: [
         { 
           name: "RFID", 
+          enabled: true,
           submenu: [
-            { name: "Hardware", path: "/products/rfid/hardware" },
-            { name: "Tags", path: "/products/rfid/tags" }
+            { name: "Hardware", path: "/products/rfid/hardware", enabled: true },
+            { name: "Tags", path: "/products/rfid/tags", enabled: true }
           ]
         },
         { 
           name: "IOT", 
+          enabled: true,
           submenu: [
-            { name: "Data Loggers", path: "/products/iot/data-loggers" },
-            { name: "GPS/GNSS Devices", path: "/products/iot/gps-gnss" },
-            { name: "LoRaWAN/Other Sensor Devices", path: "/products/iot/lorawan-sensors" }
+            { name: "Data Loggers", path: "/products/iot/data-loggers", enabled: true },
+            { name: "GPS/GNSS Devices", path: "/products/iot/gps-gnss", enabled: true },
+            { name: "LoRaWAN/Other Sensor Devices", path: "/products/iot/lorawan-sensors", enabled: true }
           ]
         },
         { 
           name: "Software Solution", 
+          enabled: true,
           submenu: [
-            { name: "Retail Automation", path: "/products/software/retail-automation" },
-            { name: "Assets Tracking", path: "/products/software/assets-tracking" },
-            { name: "Warehouse Management", path: "/products/software/warehouse-management" },
-            { name: "Facility Management", path: "/products/software/facility-management" },
-            { name: "Factory Automation", path: "/products/software/factory-automation" }
+            { name: "Retail Automation", path: "/products/software/retail-automation", enabled: true },
+            { name: "Assets Tracking", path: "/products/software/assets-tracking", enabled: true },
+            { name: "Warehouse Management", path: "/products/software/warehouse-management", enabled: true },
+            { name: "Facility Management", path: "/products/software/facility-management", enabled: true },
+            { name: "Factory Automation", path: "/products/software/factory-automation", enabled: true }
           ]
         }
       ],
     },
     {
       name: "Industry",
+      enabled: true,
       dropdown: [
-        { name: "Retail", path: "/industries/retail" },
-        { name: "Manufacturing", path: "/industries/manufacturing" },
-        { name: "Logistics & Supply chain", path: "/industries/logistics" },
-        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce" },
-        { name: "Renewable Energy", path: "/industries/renewable-energy" }
+        { name: "Retail", path: "/industries/retail", enabled: true },
+        { name: "Manufacturing", path: "/industries/manufacturing", enabled: true },
+        { name: "Logistics & Supply chain", path: "/industries/logistics", enabled: true },
+        { name: "E-commerce/Quick Commerce", path: "/industries/ecommerce-quickcommerce", enabled: true },
+        { name: "Renewable Energy", path: "/industries/renewable-energy", enabled: true }
       ],
     },
     {
       name: "Blogs",
+      enabled: true,
       dropdown: [
-        { name: "Latest Blogs", path: "/blogs" },
-        { name: "Case Studies", path: "/case-studies" },
-        { name: "Updates", path: "/blogs" }
+        { name: "Latest Blogs", path: "/blogs", enabled: true },
+        { name: "Case Studies", path: "/case-studies", enabled: true },
+        { name: "Updates", path: "/blogs", enabled: true }
       ],
     },
   ];
@@ -97,11 +105,18 @@ export default function NavigationMenuEditor() {
   // VISUAL NAVIGATION BUILDER ACTIONS
   // ==========================================
   const addTopLevelItem = () => {
-    setNavItemsList([...navItemsList, { name: "New Menu Item", dropdown: [] }]);
+    setNavItemsList([...navItemsList, { name: "New Menu Item", enabled: true, dropdown: [] }]);
   };
 
   const removeTopLevelItem = (index) => {
     setNavItemsList(navItemsList.filter((_, i) => i !== index));
+  };
+
+  const toggleTopLevelStatus = (index) => {
+    const updated = [...navItemsList];
+    const currentStatus = updated[index].enabled !== false;
+    updated[index].enabled = !currentStatus;
+    setNavItemsList(updated);
   };
 
   const updateTopLevelName = (index, name) => {
@@ -119,9 +134,9 @@ export default function NavigationMenuEditor() {
     if (type === 'string') {
       updated[topIndex].dropdown.push("New Industry Label");
     } else if (type === 'submenu') {
-      updated[topIndex].dropdown.push({ name: "New Submenu Title", submenu: [] });
+      updated[topIndex].dropdown.push({ name: "New Submenu Title", enabled: true, submenu: [] });
     } else {
-      updated[topIndex].dropdown.push({ name: "New Link", path: "/" });
+      updated[topIndex].dropdown.push({ name: "New Link", path: "/", enabled: true });
     }
     setNavItemsList(updated);
   };
@@ -132,14 +147,24 @@ export default function NavigationMenuEditor() {
     setNavItemsList(updated);
   };
 
+  const toggleDropdownStatus = (topIndex, dropIndex) => {
+    const updated = [...navItemsList];
+    const item = updated[topIndex].dropdown[dropIndex];
+    if (typeof item !== 'string') {
+      const currentStatus = item.enabled !== false;
+      updated[topIndex].dropdown[dropIndex] = { ...item, enabled: !currentStatus };
+      setNavItemsList(updated);
+    }
+  };
+
   const changeDropdownType = (topIndex, dropIndex, type) => {
     const updated = [...navItemsList];
     if (type === 'string') {
       updated[topIndex].dropdown[dropIndex] = "New Industry Label";
     } else if (type === 'submenu') {
-      updated[topIndex].dropdown[dropIndex] = { name: "New Submenu Title", submenu: [] };
+      updated[topIndex].dropdown[dropIndex] = { name: "New Submenu Title", enabled: true, submenu: [] };
     } else {
-      updated[topIndex].dropdown[dropIndex] = { name: "New Link", path: "/" };
+      updated[topIndex].dropdown[dropIndex] = { name: "New Link", path: "/", enabled: true };
     }
     setNavItemsList(updated);
   };
@@ -159,7 +184,7 @@ export default function NavigationMenuEditor() {
     const updated = [...navItemsList];
     const item = updated[topIndex].dropdown[dropIndex];
     if (item.submenu) {
-      item.submenu.push({ name: "Sub-link name", path: "/" });
+      item.submenu.push({ name: "Sub-link name", path: "/", enabled: true });
     }
     setNavItemsList(updated);
   };
@@ -171,6 +196,16 @@ export default function NavigationMenuEditor() {
       item.submenu = item.submenu.filter((_, i) => i !== subIndex);
     }
     setNavItemsList(updated);
+  };
+
+  const toggleSubmenuStatus = (topIndex, dropIndex, subIndex) => {
+    const updated = [...navItemsList];
+    const item = updated[topIndex].dropdown[dropIndex];
+    if (item.submenu && item.submenu[subIndex]) {
+      const currentStatus = item.submenu[subIndex].enabled !== false;
+      item.submenu[subIndex] = { ...item.submenu[subIndex], enabled: !currentStatus };
+      setNavItemsList(updated);
+    }
   };
 
   const updateSubmenuValue = (topIndex, dropIndex, subIndex, field, value) => {
@@ -247,9 +282,23 @@ export default function NavigationMenuEditor() {
                   <Trash2 size={16} />
                 </button>
 
-                {/* Top Level Item Title */}
-                <div className="max-w-md">
-                  <label className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-500 mb-1">Top-Level Menu Name</label>
+                {/* Top Level Item Title & Enable/Disable Toggle */}
+                <div className="max-w-md space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-extrabold uppercase tracking-wider text-gray-500">Top-Level Menu Name</label>
+                    <button
+                      type="button"
+                      onClick={() => toggleTopLevelStatus(topIndex)}
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 transition-all ${
+                        topItem.enabled !== false 
+                          ? "bg-emerald-100 text-emerald-800 border border-emerald-300" 
+                          : "bg-gray-200 text-gray-600 border border-gray-300"
+                      }`}
+                    >
+                      {topItem.enabled !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                      <span>{topItem.enabled !== false ? "Enabled" : "Disabled"}</span>
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={topItem.name}
@@ -269,18 +318,35 @@ export default function NavigationMenuEditor() {
                     const isSubmenu = !isString && !!dropItem.submenu;
 
                     return (
-                      <div key={dropIndex} className="p-4 bg-white rounded-xl border border-gray-200 relative space-y-3">
-                        {/* Remove Dropdown Item */}
-                        <button
-                          type="button"
-                          onClick={() => removeDropdownItem(topIndex, dropIndex)}
-                          className="absolute top-3 right-3 text-red-400 hover:text-red-600"
-                          title="Remove Link"
-                        >
-                          <X size={16} />
-                        </button>
+                      <div key={dropIndex} className={`p-4 bg-white rounded-xl border relative space-y-3 transition-all ${!isString && dropItem.enabled === false ? 'opacity-65 bg-gray-50 border-dashed border-gray-300' : 'border-gray-200'}`}>
+                        {/* Status Toggle & Remove Dropdown Item */}
+                        <div className="absolute top-3 right-3 flex items-center gap-2">
+                          {!isString && (
+                            <button
+                              type="button"
+                              onClick={() => toggleDropdownStatus(topIndex, dropIndex)}
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-1 transition-all ${
+                                dropItem.enabled !== false
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : "bg-gray-200 text-gray-600 border border-gray-300"
+                              }`}
+                              title={dropItem.enabled !== false ? "Click to Disable link" : "Click to Enable link"}
+                            >
+                              {dropItem.enabled !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                              <span>{dropItem.enabled !== false ? "Active" : "Disabled"}</span>
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeDropdownItem(topIndex, dropIndex)}
+                            className="text-red-400 hover:text-red-600 p-1"
+                            title="Remove Link"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pr-24">
                           {/* Choose Dropdown Type */}
                           <div>
                             <label className="block text-[9px] font-bold uppercase tracking-wider text-gray-400 mb-1">Item Type</label>
@@ -342,16 +408,22 @@ export default function NavigationMenuEditor() {
 
                             <div className="space-y-2">
                               {dropItem.submenu.map((subItem, subIndex) => (
-                                <div key={subIndex} className="flex flex-col md:flex-row gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200/50 items-center relative">
+                                <div key={subIndex} className={`flex flex-col md:flex-row gap-3 p-3 rounded-lg border items-center relative transition-all ${subItem.enabled === false ? 'bg-gray-100/70 border-dashed border-gray-300 opacity-70' : 'bg-gray-50 border-gray-200/50'}`}>
                                   <button
                                     type="button"
-                                    onClick={() => removeSubmenuItem(topIndex, dropIndex, subIndex)}
-                                    className="absolute top-2 right-2 md:relative md:top-auto md:right-auto text-red-400 hover:text-red-600 order-last"
+                                    onClick={() => toggleSubmenuStatus(topIndex, dropIndex, subIndex)}
+                                    className={`px-2 py-1 rounded text-[10px] font-extrabold flex items-center gap-1 transition-all shrink-0 ${
+                                      subItem.enabled !== false
+                                        ? "bg-emerald-100 text-emerald-800"
+                                        : "bg-gray-300 text-gray-700"
+                                    }`}
+                                    title={subItem.enabled !== false ? "Click to Disable" : "Click to Enable"}
                                   >
-                                    <X size={14} />
+                                    {subItem.enabled !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                                    <span>{subItem.enabled !== false ? "Active" : "Disabled"}</span>
                                   </button>
 
-                                  <div className="w-full md:w-1/2">
+                                  <div className="w-full md:w-5/12">
                                     <input
                                       type="text"
                                       value={subItem.name}
@@ -361,7 +433,7 @@ export default function NavigationMenuEditor() {
                                       required
                                     />
                                   </div>
-                                  <div className="w-full md:w-1/2">
+                                  <div className="w-full md:w-5/12">
                                     <input
                                       type="text"
                                       value={subItem.path}
@@ -371,6 +443,14 @@ export default function NavigationMenuEditor() {
                                       required
                                     />
                                   </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeSubmenuItem(topIndex, dropIndex, subIndex)}
+                                    className="text-red-400 hover:text-red-600 shrink-0"
+                                    title="Delete sublink"
+                                  >
+                                    <X size={14} />
+                                  </button>
                                 </div>
                               ))}
 

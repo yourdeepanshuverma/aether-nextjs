@@ -171,7 +171,7 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-9">
-            {navItems.map((item, index) => (
+            {navItems.filter(item => item.enabled !== false).map((item, index) => (
               <div
                 key={index}
                 className="relative group"
@@ -194,7 +194,7 @@ const Header = () => {
                       : "opacity-0 invisible translate-y-3"
                   }`}
                 >
-                  {item.dropdown && item.dropdown.map((drop, i) => (
+                  {item.dropdown && item.dropdown.filter(drop => typeof drop === 'string' || drop.enabled !== false).map((drop, i) => (
                     <div key={i} className="relative group/sub">
                       {typeof drop === 'string' ? (
                         <Link
@@ -209,7 +209,7 @@ const Header = () => {
                           <ChevronRight size={14} />
                           {/* Submenu */}
                           <div className="absolute left-full top-0 w-[200px] bg-brand-blue border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover/sub:block transition-all duration-300">
-                            {drop.submenu.map((sub, j) => (
+                            {drop.submenu.filter(sub => sub.enabled !== false).map((sub, j) => (
                               <Link
                                 key={j}
                                 href={sub.path}
@@ -256,7 +256,7 @@ const Header = () => {
           }`}
         >
           <div className="flex flex-col gap-4 pt-4">
-            {navItems.map((item, index) => (
+            {navItems.filter(item => item.enabled !== false).map((item, index) => (
               <div key={index} className="border-b border-white/10 pb-3">
                 <button
                   className="flex items-center justify-between w-full text-left text-[14px] font-medium"
@@ -281,7 +281,7 @@ const Header = () => {
                   }`}
                 >
                   <div className="flex flex-col gap-2 pl-3">
-                    {item.dropdown && item.dropdown.map((drop, i) => (
+                    {item.dropdown && item.dropdown.filter(drop => typeof drop === 'string' || drop.enabled !== false).map((drop, i) => (
                       <div key={i}>
                         {typeof drop === 'string' ? (
                           <Link
@@ -310,7 +310,7 @@ const Header = () => {
                                 activeSubmenu === i ? "max-h-40" : "max-h-0"
                               }`}
                             >
-                              {drop.submenu.map((sub, j) => (
+                              {drop.submenu.filter(sub => sub.enabled !== false).map((sub, j) => (
                                 <Link
                                   key={j}
                                   href={sub.path}

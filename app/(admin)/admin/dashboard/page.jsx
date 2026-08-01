@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
-import { Save, CheckCircle, AlertCircle } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Upload, Video, Loader2 } from 'lucide-react';
 
 export default function PageContentEditor() {
   const [uploading, setUploading] = useState(false);
@@ -20,7 +20,7 @@ export default function PageContentEditor() {
     setTimeout(() => setStatusMessage({ success: '', error: '' }), 4000);
   };
 
-  const handleImageUpload = async (e, folder, callback) => {
+  const handleFileUpload = async (e, folder, callback) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -30,7 +30,7 @@ export default function PageContentEditor() {
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `${folder}/${fileName}`;
 
-      // Upload the file to Supabase storage bucket 'images'
+      // Upload file to Supabase storage bucket 'images' (or media storage)
       const { data, error } = await supabase.storage
         .from('images')
         .upload(filePath, file, {
@@ -40,19 +40,21 @@ export default function PageContentEditor() {
 
       if (error) throw error;
 
-      // Retrieve the public URL
+      // Retrieve public URL
       const { data: publicUrlData } = supabase.storage
         .from('images')
         .getPublicUrl(filePath);
 
       callback(publicUrlData.publicUrl);
     } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image: ' + error.message);
+      console.error('Error uploading file:', error);
+      alert('Failed to upload file: ' + error.message);
     } finally {
       setUploading(false);
     }
   };
+
+  const handleImageUpload = handleFileUpload;
 
   const heroDefaults = getContent("home-hero", {
     title: "Aether-RFID Pioneering Innovation in RFID and IoT Solutions",
@@ -219,13 +221,26 @@ export default function PageContentEditor() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Background MP4 Video Path</label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Background MP4 Video Path / File</label>
+                  {uploading && <span className="text-[10px] text-brand-orange animate-pulse font-bold flex items-center gap-1"><Loader2 size={12} className="animate-spin" /> Uploading Video...</span>}
+                </div>
                 <input
                   type="text"
                   value={heroForm.videoUrl}
                   onChange={(e) => setHeroForm({ ...heroForm, videoUrl: e.target.value })}
+                  placeholder="/assets/aether-rfid-one.mp4"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
                 />
+                <div className="mt-2 flex items-center gap-3">
+                  <input 
+                    type="file" 
+                    accept="video/mp4,video/webm,video/ogg,video/*"
+                    disabled={uploading}
+                    onChange={(e) => handleFileUpload(e, 'videos', (url) => setHeroForm({ ...heroForm, videoUrl: url }))}
+                    className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 cursor-pointer disabled:opacity-50"
+                  />
+                </div>
               </div>
             </div>
             <div className="flex justify-end">

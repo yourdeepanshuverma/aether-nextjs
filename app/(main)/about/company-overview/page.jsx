@@ -1,5 +1,6 @@
 "use client";
 import { Target, Award, Shield, Cpu, Users, Zap } from "lucide-react";
+import Link from "next/link";
 
 const CompanyOverview = () => {
   const values = [
@@ -190,7 +191,7 @@ const CompanyOverview = () => {
               Our core values are the foundation of everything we build, guiding
               our team to deliver excellence in every project.
             </p>
-            
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -226,9 +227,11 @@ const CompanyOverview = () => {
               </p>
             </div>
             <div className="lg:w-1/3 flex justify-center lg:justify-end">
-              <button className="bg-white text-brand-blue px-12 py-6 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl">
+              <Link
+                href="/contact"
+                className="bg-white text-brand-blue px-12 py-6 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl">
                 Get Started Today
-              </button>
+              </Link>
             </div>
           </div>
           {/* Decorative Circle */}

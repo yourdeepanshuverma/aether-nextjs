@@ -54,7 +54,7 @@ const RenewableEnergyIndustry = () => {
         "EL Testing & Flash Testing records",
         "Real-time Work-in-Progress (WIP) visibility & genealogy"
       ],
-      image: "/assets/industries/manufacturing-wip-tracking-v2.png"
+      image: "/assets/industries/solar-wip-tracking.png"
     },
     {
       title: "Warehouse & Dispatch Management",

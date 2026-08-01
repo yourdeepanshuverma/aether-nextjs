@@ -102,7 +102,7 @@ const AllianceSection = () => {
           {/* Certifications Column */}
           <div className="lg:w-3/3">
             {" "}
-            // switch back to 1/3
+            {/* switch back to 1/3 */}
             <div className="flex items-center gap-3 mb-8">
               <div className="p-2 bg-brand-green/10 rounded-lg text-brand-blue">
                 <Award size={24} />

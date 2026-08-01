@@ -78,7 +78,7 @@ const RenewableEnergyIndustry = () => {
         "Installation validation & field service support",
         "Ideal for Manufacturers, EPC Contractors & Utility Companies"
       ],
-      image: "/assets/industries/logistics-smart-inventory-v2.png"
+      image: "/assets/industries/solar-panels-open-field.avif"
     }
   ];
 

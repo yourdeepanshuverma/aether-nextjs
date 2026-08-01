@@ -71,8 +71,8 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row md:h-screen md:overflow-hidden">
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 bg-brand-blue text-white flex flex-col shrink-0">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+      <aside className="w-full md:w-64 bg-brand-blue text-white flex flex-col shrink-0 md:h-screen">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <img
               src="/assets/Aether-rfid.png"
@@ -86,7 +86,7 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        <nav className="p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible">
+        <nav className="p-4 flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto flex-1 sidebar-scrollbar">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.path;
@@ -94,8 +94,8 @@ export default function DashboardLayout({ children }) {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`w-full text-left px-4 py-3.5 rounded-xl flex items-center gap-3 transition-colors text-sm font-bold whitespace-nowrap ${
-                  isActive ? 'bg-brand-orange text-white' : 'hover:bg-white/5 text-white/80'
+                className={`w-full text-left px-4 py-3.5 rounded-xl flex items-center gap-3 transition-colors text-sm font-bold whitespace-nowrap shrink-0 ${
+                  isActive ? 'bg-brand-orange text-white shadow-md' : 'hover:bg-white/5 text-white/80'
                 }`}
               >
                 <Icon size={18} />
@@ -110,55 +110,10 @@ export default function DashboardLayout({ children }) {
           })}
         </nav>
 
-        {/* Text Size Accessibility Controls in Sidebar */}
-        <div className="p-4 border-t border-white/10 hidden md:block space-y-3">
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-[10px] text-slate-300 font-extrabold uppercase tracking-wider select-none">
-              TEXT SIZE:
-            </span>
-            <div className="flex items-center gap-1 p-0.5 bg-slate-900/80 border border-slate-700/80 rounded-2xl shadow-inner">
-              <button
-                type="button"
-                onClick={decreaseFontSize}
-                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
-                  fontScale < 100
-                    ? "bg-brand-orange text-white shadow-md"
-                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
-                }`}
-                title="Decrease Font Size (A-)"
-              >
-                A-
-              </button>
-              <button
-                type="button"
-                onClick={resetFontSize}
-                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
-                  fontScale === 100
-                    ? "bg-slate-700 text-white border border-slate-500/50"
-                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
-                }`}
-                title="Reset Font Size (A)"
-              >
-                A
-              </button>
-              <button
-                type="button"
-                onClick={increaseFontSize}
-                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
-                  fontScale > 100
-                    ? "bg-brand-orange text-white shadow-md"
-                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
-                }`}
-                title="Increase Font Size (A+)"
-              >
-                A+
-              </button>
-            </div>
-          </div>
-
+        <div className="p-4 border-t border-white/10 mt-auto shrink-0 hidden md:block bg-brand-blue">
           <button 
             onClick={() => { logoutAdmin(); router.push('/admin'); }}
-            className="w-full px-4 py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:bg-white/5 flex items-center justify-center gap-2 transition-colors text-sm font-bold"
+            className="w-full px-4 py-3 rounded-xl border border-white/20 text-white/90 hover:text-white hover:bg-white/10 flex items-center justify-center gap-2 transition-all text-sm font-bold shadow-sm"
           >
             <LogOut size={16} /> Sign Out
           </button>

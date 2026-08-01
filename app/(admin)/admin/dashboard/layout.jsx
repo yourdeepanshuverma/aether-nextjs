@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from "next/navigation";
 import { useContent } from '@/context/ContentContext';
 import Link from 'next/link';
@@ -19,6 +19,34 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const { adminToken, logoutAdmin, contacts } = useContent();
+
+  // Accessibility Font Scale state
+  const [fontScale, setFontScale] = useState(100);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedScale = localStorage.getItem("global-font-scale");
+      if (savedScale) {
+        const parsed = parseInt(savedScale, 10);
+        if (!isNaN(parsed) && parsed >= 80 && parsed <= 130) {
+          setFontScale(parsed);
+          document.documentElement.style.fontSize = `${parsed}%`;
+        }
+      }
+    }
+  }, []);
+
+  const changeFontScale = (newScale) => {
+    if (newScale >= 80 && newScale <= 130) {
+      setFontScale(newScale);
+      document.documentElement.style.fontSize = `${newScale}%`;
+      localStorage.setItem("global-font-scale", newScale.toString());
+    }
+  };
+
+  const increaseFontSize = () => changeFontScale(fontScale + 10);
+  const decreaseFontSize = () => changeFontScale(fontScale - 10);
+  const resetFontSize = () => changeFontScale(100);
 
   // Redirection guard
   useEffect(() => {
@@ -82,7 +110,52 @@ export default function DashboardLayout({ children }) {
           })}
         </nav>
 
-        <div className="mt-auto p-4 border-t border-white/10 hidden md:block">
+        {/* Text Size Accessibility Controls in Sidebar */}
+        <div className="p-4 border-t border-white/10 hidden md:block space-y-3">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] text-slate-300 font-extrabold uppercase tracking-wider select-none">
+              TEXT SIZE:
+            </span>
+            <div className="flex items-center gap-1 p-0.5 bg-slate-900/80 border border-slate-700/80 rounded-2xl shadow-inner">
+              <button
+                type="button"
+                onClick={decreaseFontSize}
+                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale < 100
+                    ? "bg-brand-orange text-white shadow-md"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Decrease Font Size (A-)"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                onClick={resetFontSize}
+                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale === 100
+                    ? "bg-slate-700 text-white border border-slate-500/50"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Reset Font Size (A)"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                onClick={increaseFontSize}
+                className={`px-2 py-0.5 rounded-xl text-[10px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale > 100
+                    ? "bg-brand-orange text-white shadow-md"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Increase Font Size (A+)"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+
           <button 
             onClick={() => { logoutAdmin(); router.push('/admin'); }}
             className="w-full px-4 py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:bg-white/5 flex items-center justify-center gap-2 transition-colors text-sm font-bold"
@@ -92,9 +165,63 @@ export default function DashboardLayout({ children }) {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-grow p-6 md:p-10 max-w-[1200px] mx-auto w-full md:overflow-y-auto">
-        {children}
+      {/* Main Content Area with Header */}
+      <main className="flex-grow flex flex-col h-full overflow-hidden w-full">
+        {/* Admin Top Bar */}
+        <div className="bg-white border-b border-gray-200/80 px-6 py-3.5 flex justify-between items-center shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Aether RFID Admin Dashboard</span>
+          </div>
+
+          {/* Text Size Control Widget */}
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] text-gray-600 font-extrabold uppercase tracking-wider select-none">
+              TEXT SIZE:
+            </span>
+            <div className="flex items-center gap-1.5 p-1 bg-slate-900/90 border border-slate-700/80 rounded-2xl shadow-inner">
+              <button
+                type="button"
+                onClick={decreaseFontSize}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale < 100
+                    ? "bg-brand-orange text-white shadow-md shadow-brand-orange/20"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Decrease Font Size (A-)"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                onClick={resetFontSize}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale === 100
+                    ? "bg-slate-700 text-white border border-slate-500/50"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Reset Font Size (A)"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                onClick={increaseFontSize}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-extrabold transition-all duration-200 select-none ${
+                  fontScale > 100
+                    ? "bg-brand-orange text-white shadow-md shadow-brand-orange/20"
+                    : "bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white"
+                }`}
+                title="Increase Font Size (A+)"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-grow p-6 md:p-10 max-w-[1200px] mx-auto w-full overflow-y-auto">
+          {children}
+        </div>
       </main>
     </div>
   );

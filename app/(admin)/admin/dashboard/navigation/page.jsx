@@ -281,16 +281,6 @@ export default function NavigationMenuEditor() {
           <div className="space-y-6">
             {navItemsList.map((topItem, topIndex) => (
               <div key={topIndex} className="p-5 bg-gray-50/70 rounded-2xl border border-gray-200/60 relative space-y-4">
-                {/* Remove Top Level Button */}
-                <button
-                  type="button"
-                  onClick={() => removeTopLevelItem(topIndex)}
-                  className="absolute top-4 right-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg transition-all"
-                  title="Delete Menu Item"
-                >
-                  <Trash2 size={16} />
-                </button>
-
                 {/* Top Level Item Title & Enable/Disable Toggle */}
                 <div className="max-w-md space-y-1">
                   <div className="flex items-center justify-between">
@@ -311,10 +301,10 @@ export default function NavigationMenuEditor() {
                   <input
                     type="text"
                     value={topItem.name}
+                    disabled
                     onChange={(e) => updateTopLevelName(topIndex, e.target.value)}
-                    className="w-full px-4 py-2 text-base font-bold bg-white rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue transition-all"
+                    className="w-full px-4 py-2 text-base font-bold bg-gray-100/80 rounded-lg border border-gray-200 text-gray-700 cursor-not-allowed transition-all"
                     placeholder="e.g. Products"
-                    required
                   />
                 </div>
 
@@ -345,14 +335,6 @@ export default function NavigationMenuEditor() {
                               <span>{dropItem.enabled !== false ? "Active" : "Disabled"}</span>
                             </button>
                           )}
-                          <button
-                            type="button"
-                            onClick={() => removeDropdownItem(topIndex, dropIndex)}
-                            className="text-red-400 hover:text-red-600 p-1"
-                            title="Remove Link"
-                          >
-                            <X size={16} />
-                          </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pr-24">
@@ -360,9 +342,10 @@ export default function NavigationMenuEditor() {
                           <div>
                             <label className="block text-[9px] font-bold uppercase tracking-wider text-gray-400 mb-1">Item Type</label>
                             <select
+                              disabled
                               value={isString ? 'string' : (isSubmenu ? 'submenu' : 'link')}
                               onChange={(e) => changeDropdownType(topIndex, dropIndex, e.target.value)}
-                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 focus:outline-none cursor-pointer"
+                              className="w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 cursor-not-allowed focus:outline-none"
                             >
                               <option value="link">Simple Link</option>
                               <option value="submenu">Nested Submenu</option>
@@ -377,11 +360,11 @@ export default function NavigationMenuEditor() {
                             </label>
                             <input
                               type="text"
+                              disabled
                               value={isString ? dropItem : dropItem.name}
                               onChange={(e) => updateDropdownValue(topIndex, dropIndex, 'name', e.target.value)}
-                              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none"
+                              className="w-full px-3 py-2 bg-gray-100/80 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 cursor-not-allowed focus:outline-none"
                               placeholder="e.g. Hardware"
-                              required
                             />
                           </div>
                         </div>
@@ -392,11 +375,11 @@ export default function NavigationMenuEditor() {
                             <label className="block text-[9px] font-bold uppercase tracking-wider text-gray-400 mb-1">Destination URL Path</label>
                             <input
                               type="text"
+                              disabled
                               value={dropItem.path || ''}
                               onChange={(e) => updateDropdownValue(topIndex, dropIndex, 'path', e.target.value)}
-                              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-600 focus:outline-none font-mono"
+                              className="w-full px-3 py-2 bg-gray-100/80 rounded-lg border border-gray-200 text-xs text-gray-600 cursor-not-allowed focus:outline-none font-mono"
                               placeholder="e.g. /products/rfid/hardware"
-                              required
                             />
                           </div>
                         )}
@@ -406,13 +389,6 @@ export default function NavigationMenuEditor() {
                           <div className="pl-4 border-l-2 border-brand-green/20 space-y-3 mt-3">
                             <div className="flex justify-between items-center">
                               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Nested Sub-Links</span>
-                              <button
-                                type="button"
-                                onClick={() => addSubmenuItem(topIndex, dropIndex)}
-                                className="px-2.5 py-1 bg-brand-green/10 text-brand-green hover:bg-brand-green/20 text-[10px] font-bold rounded-md flex items-center gap-1 transition-all"
-                              >
-                                <Plus size={10} /> Add Sub-Link
-                              </button>
                             </div>
 
                             <div className="space-y-2">
@@ -435,37 +411,29 @@ export default function NavigationMenuEditor() {
                                   <div className="w-full md:w-5/12">
                                     <input
                                       type="text"
+                                      disabled
                                       value={subItem.name}
                                       onChange={(e) => updateSubmenuValue(topIndex, dropIndex, subIndex, 'name', e.target.value)}
-                                      className="w-full px-3 py-1.5 bg-white rounded-lg border border-gray-200 text-xs font-medium text-gray-800"
+                                      className="w-full px-3 py-1.5 bg-gray-100/80 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 cursor-not-allowed"
                                       placeholder="Sub-link Title"
-                                      required
                                     />
                                   </div>
                                   <div className="w-full md:w-5/12">
                                     <input
                                       type="text"
+                                      disabled
                                       value={subItem.path}
                                       onChange={(e) => updateSubmenuValue(topIndex, dropIndex, subIndex, 'path', e.target.value)}
-                                      className="w-full px-3 py-1.5 bg-white rounded-lg border border-gray-200 text-xs text-gray-600 font-mono"
+                                      className="w-full px-3 py-1.5 bg-gray-100/80 rounded-lg border border-gray-200 text-xs text-gray-600 cursor-not-allowed font-mono"
                                       placeholder="/path/to/page"
-                                      required
                                     />
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => removeSubmenuItem(topIndex, dropIndex, subIndex)}
-                                    className="text-red-400 hover:text-red-600 shrink-0"
-                                    title="Delete sublink"
-                                  >
-                                    <X size={14} />
-                                  </button>
                                 </div>
                               ))}
 
                               {dropItem.submenu.length === 0 && (
                                 <div className="text-[10px] text-gray-400 italic text-center py-2">
-                                  No nested sub-links yet. Click "Add Sub-Link".
+                                  No nested sub-links.
                                 </div>
                               )}
                             </div>
@@ -474,51 +442,12 @@ export default function NavigationMenuEditor() {
                       </div>
                     );
                   })}
-
-                  {/* Add Dropdown Item Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => addDropdownItem(topIndex, 'link')}
-                      className="px-3 py-1.5 bg-brand-blue/5 hover:bg-brand-blue/10 text-brand-blue text-[11px] font-bold rounded-lg flex items-center gap-1 transition-all"
-                    >
-                      <Plus size={12} /> Add Simple Link
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => addDropdownItem(topIndex, 'submenu')}
-                      className="px-3 py-1.5 bg-brand-blue/5 hover:bg-brand-blue/10 text-brand-blue text-[11px] font-bold rounded-lg flex items-center gap-1 transition-all"
-                    >
-                      <Plus size={12} /> Add Nested Submenu Group
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => addDropdownItem(topIndex, 'string')}
-                      className="px-3 py-1.5 bg-brand-blue/5 hover:bg-brand-blue/10 text-brand-blue text-[11px] font-bold rounded-lg flex items-center gap-1 transition-all"
-                    >
-                      <Plus size={12} /> Add Text Label
-                    </button>
-                  </div>
                 </div>
               </div>
             ))}
-
-            {navItemsList.length === 0 && (
-              <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-300 text-gray-400 text-sm">
-                No navigation menu items created yet. Click "Add Top-Level Menu Item".
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={addTopLevelItem}
-              className="w-full py-4 border-2 border-dashed border-gray-300 bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-700 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all"
-            >
-              <Plus size={18} /> Add Top-Level Menu Item
-            </button>
           </div>
 
-          <div className="flex justify-between items-center border-t border-gray-100 pt-6">
+          <div className="flex justify-end items-center border-t border-gray-100 pt-6">
             <button
               type="button"
               onClick={() => {

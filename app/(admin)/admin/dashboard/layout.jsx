@@ -11,7 +11,8 @@ import {
   LogOut, 
   Menu,
   Package,
-  Settings
+  Settings,
+  FileCode
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -35,6 +36,7 @@ export default function DashboardLayout({ children }) {
     { name: 'Manage Blogs', path: '/admin/dashboard/blogs', icon: FileText },
     { name: 'Manage Team', path: '/admin/dashboard/team', icon: Users },
     { name: 'Manage Footer', path: '/admin/dashboard/footer', icon: Settings },
+    { name: 'Manage Sitemap', path: '/admin/dashboard/sitemap', icon: FileCode },
     { name: 'Inquiries', path: '/admin/dashboard/contacts', icon: Mail, badge: contacts.length },
   ];
 

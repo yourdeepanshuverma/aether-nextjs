@@ -1,10 +1,13 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
-import { Save, Plus, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Save, Plus, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function NavigationMenuEditor() {
   const [statusMessage, setStatusMessage] = useState({ success: '', error: '' });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   const { 
     getContent, 
     updateSectionContent,
@@ -219,6 +222,8 @@ export default function NavigationMenuEditor() {
 
   const handleNavSave = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
+    setSaveSuccess(false);
     try {
       await updateSectionContent("header-nav", {
         title: "Header Navigation",
@@ -227,8 +232,12 @@ export default function NavigationMenuEditor() {
           items: navItemsList
         }
       });
+      setIsSaving(false);
+      setSaveSuccess(true);
       showStatus("Navigation Menu updated successfully!");
+      setTimeout(() => setSaveSuccess(false), 3500);
     } catch (err) {
+      setIsSaving(false);
       showStatus("", "Failed to save Navigation Menu.");
     }
   };
@@ -524,13 +533,47 @@ export default function NavigationMenuEditor() {
 
             <button 
               type="submit" 
-              className="px-6 py-3.5 bg-brand-blue hover:bg-brand-blue/90 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-brand-blue/10"
+              disabled={isSaving}
+              className={`px-8 py-3.5 rounded-xl text-sm font-extrabold flex items-center gap-2 shadow-lg transition-all ${
+                saveSuccess
+                  ? "bg-emerald-600 text-white shadow-emerald-600/20 scale-105"
+                  : isSaving
+                  ? "bg-brand-blue/70 text-white cursor-not-allowed"
+                  : "bg-brand-blue hover:bg-brand-blue/90 text-white shadow-brand-blue/10 hover:scale-105"
+              }`}
             >
-              <Save size={16} /> Save Navigation Menu
+              {isSaving ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Saving Menu Changes...</span>
+                </>
+              ) : saveSuccess ? (
+                <>
+                  <CheckCircle size={18} />
+                  <span>Saved Successfully!</span>
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  <span>Save Navigation Menu</span>
+                </>
+              )}
             </button>
           </div>
         </form>
       </div>
+
+      {/* Floating Toast Notification (Always Visible Even When Scrolled) */}
+      {statusMessage.success && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-2xl shadow-2xl text-sm font-bold animate-bounce border border-emerald-500">
+          <CheckCircle size={20} /> {statusMessage.success}
+        </div>
+      )}
+      {statusMessage.error && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-rose-600 text-white rounded-2xl shadow-2xl text-sm font-bold border border-rose-500">
+          <AlertCircle size={20} /> {statusMessage.error}
+        </div>
+      )}
     </>
   );
 }

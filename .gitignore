@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+seed-db.cjs
+seed-nav.cjs
+.gitignore
+seed-products.cjs
+supabase-schema.sql
+vps-supabase-guide.md

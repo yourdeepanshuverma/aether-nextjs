@@ -365,6 +365,18 @@ export default function PageContentEditor() {
           </form>
         </div>
       </div>
+
+      {/* Floating Toast Notification */}
+      {statusMessage.success && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-2xl shadow-2xl text-sm font-bold animate-bounce border border-emerald-500">
+          <CheckCircle size={20} /> {statusMessage.success}
+        </div>
+      )}
+      {statusMessage.error && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-rose-600 text-white rounded-2xl shadow-2xl text-sm font-bold border border-rose-500">
+          <AlertCircle size={20} /> {statusMessage.error}
+        </div>
+      )}
     </>
   );
 }

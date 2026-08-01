@@ -154,7 +154,7 @@ export default function BlogsManager() {
             <div key={post._id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
               <div>
                 <div className="h-44 w-full rounded-2xl overflow-hidden mb-4 bg-gray-100">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                  <img src={post.image || "/assets/about-2.webp"} alt={post.title} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[10px] font-extrabold text-brand-blue bg-brand-blue/10 px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-3">{post.category}</span>
                 <h3 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">{post.title}</h3>

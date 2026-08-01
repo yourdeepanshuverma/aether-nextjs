@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
-import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function TeamManager() {
   const [uploading, setUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState({ success: '', error: '' });
   const [teamModal, setTeamModal] = useState({ show: false, mode: 'create', id: null });
   const [teamForm, setTeamForm] = useState({
-    name: '', role: '', bio: '', image: ''
+    name: '', role: '', bio: '', image: '', enabled: true
   });
 
   const { 
@@ -65,7 +65,7 @@ export default function TeamManager() {
   };
 
   const openTeamCreate = () => {
-    setTeamForm({ name: '', role: '', bio: '', image: '' });
+    setTeamForm({ name: '', role: '', bio: '', image: '', enabled: true });
     setTeamModal({ show: true, mode: 'create', id: null });
   };
 
@@ -74,9 +74,21 @@ export default function TeamManager() {
       name: member.name,
       role: member.role,
       bio: member.bio,
-      image: member.image
+      image: member.image,
+      enabled: member.enabled !== false
     });
     setTeamModal({ show: true, mode: 'edit', id: member._id });
+  };
+
+  const handleToggleVisibility = async (member) => {
+    const currentEnabled = member.enabled !== false;
+    const updatedMember = { ...member, enabled: !currentEnabled };
+    try {
+      await editTeamMember(member._id, updatedMember);
+      showStatus(`Team member ${!currentEnabled ? 'enabled' : 'disabled'} successfully!`);
+    } catch (err) {
+      showStatus("", "Failed to update visibility.");
+    }
   };
 
   const handleTeamSubmit = async (e) => {
@@ -149,9 +161,31 @@ export default function TeamManager() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {team.map(member => (
-            <div key={member._id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex flex-col items-center text-center">
-              <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-gray-100 shadow-inner bg-gray-50">
-                <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+            <div key={member._id} className={`bg-white rounded-3xl p-5 border flex flex-col items-center text-center relative transition-all ${member.enabled === false ? 'opacity-60 bg-gray-50 border-dashed border-gray-300' : 'border-gray-100 shadow-sm'}`}>
+              
+              {/* Visibility Toggle Badge */}
+              <button
+                type="button"
+                onClick={() => handleToggleVisibility(member)}
+                className={`absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 transition-all ${
+                  member.enabled !== false 
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300" 
+                    : "bg-gray-200 text-gray-600 border border-gray-300"
+                }`}
+                title={member.enabled !== false ? "Click to Hide on website" : "Click to Show on website"}
+              >
+                {member.enabled !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                <span>{member.enabled !== false ? "Visible" : "Hidden"}</span>
+              </button>
+
+              <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-gray-100 shadow-inner bg-gray-50 mt-2 flex items-center justify-center">
+                {member.image ? (
+                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-brand-blue/10 text-brand-blue font-bold text-2xl uppercase">
+                    {member.name ? member.name.charAt(0) : 'U'}
+                  </div>
+                )}
               </div>
               <h3 className="text-base font-bold text-gray-900 leading-tight">{member.name}</h3>
               <span className="text-xs text-brand-blue font-bold tracking-wider uppercase mt-1 inline-block">{member.role}</span>
@@ -241,6 +275,19 @@ export default function TeamManager() {
                 ></textarea>
               </div>
 
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <input
+                  type="checkbox"
+                  id="enabledCheck"
+                  checked={teamForm.enabled !== false}
+                  onChange={(e) => setTeamForm({ ...teamForm, enabled: e.target.checked })}
+                  className="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange cursor-pointer"
+                />
+                <label htmlFor="enabledCheck" className="text-xs font-bold text-gray-700 cursor-pointer select-none">
+                  Show on Website (Visible to Public)
+                </label>
+              </div>
+
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button 
                   type="button" 
@@ -250,11 +297,23 @@ export default function TeamManager() {
                   Cancel
                 </button>
                 <button type="submit" className="px-6 py-3 bg-brand-orange text-white rounded-xl text-sm font-bold hover:bg-brand-orange/90 shadow-md">
-                  {teamModal.mode === 'create' ? 'Add Member' : 'Save Changes'}
+                  {teamModal.mode === 'create' ? 'Save Member' : 'Update Member'}
                 </button>
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Floating Toast Notification */}
+      {statusMessage.success && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-emerald-600 text-white rounded-2xl shadow-2xl text-sm font-bold animate-bounce border border-emerald-500">
+          <CheckCircle size={20} /> {statusMessage.success}
+        </div>
+      )}
+      {statusMessage.error && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-4 bg-rose-600 text-white rounded-2xl shadow-2xl text-sm font-bold border border-rose-500">
+          <AlertCircle size={20} /> {statusMessage.error}
         </div>
       )}
     </>

@@ -50,7 +50,7 @@ const Team = () => {
     }
   ];
 
-  const teamMembers = dbTeam && dbTeam.length > 0 ? dbTeam : fallbackTeam;
+  const teamMembers = (dbTeam && dbTeam.length > 0 ? dbTeam : fallbackTeam).filter(member => member.enabled !== false);
 
   if (teamLoading) {
     return (

@@ -1,8 +1,5 @@
 "use client";
-"use client";
-"use client";
-"use client";
-"use client";
+import Link from "next/link";
 import { Target, Award, ShieldCheck, ArrowRight } from "lucide-react";
 import { useContent } from "@/context/ContentContext";
 
@@ -18,6 +15,7 @@ const AboutUs = () => {
       visionTitle: "Our Vision",
       visionDesc: "To be the catalyst for a smarter, more connected global infrastructure.",
       buttonText: "Learn More About Us",
+      buttonLink: "/about/company-overview",
       imageUrl: "/assets/about-2.webp"
     }
   });
@@ -29,6 +27,7 @@ const AboutUs = () => {
   const visionTitle = aboutContent.visionTitle || "Our Vision";
   const visionDesc = aboutContent.visionDesc || "To be the catalyst for a smarter, more connected global infrastructure.";
   const buttonText = aboutContent.buttonText || "Learn More About Us";
+  const buttonLink = aboutContent.buttonLink || "/about/company-overview";
   const imageUrl = aboutContent.imageUrl || "/assets/about-2.webp";
 
   return (
@@ -88,10 +87,13 @@ const AboutUs = () => {
               </div>
             </div>
 
-            <button className="mt-12 flex items-center gap-3 bg-[#d76539] text-white px-10 py-5 rounded-2xl font-semibold hover:bg-[#000000] hover:shadow-2xl hover:shadow-[#d76539]/20 transition-all duration-300 group">
+            <Link 
+              href={buttonLink}
+              className="mt-12 inline-flex items-center gap-3 bg-[#d76539] text-white px-10 py-5 rounded-2xl font-semibold hover:bg-[#000000] hover:shadow-2xl hover:shadow-[#d76539]/20 transition-all duration-300 group"
+            >
               {buttonText}
               <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -100,4 +102,3 @@ const AboutUs = () => {
 };
 
 export default AboutUs;
-

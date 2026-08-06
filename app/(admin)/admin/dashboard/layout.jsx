@@ -12,7 +12,8 @@ import {
   Menu,
   Package,
   Settings,
-  FileCode
+  FileCode,
+  Key
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -65,6 +66,7 @@ export default function DashboardLayout({ children }) {
     { name: 'Manage Team', path: '/admin/dashboard/team', icon: Users },
     { name: 'Manage Footer', path: '/admin/dashboard/footer', icon: Settings },
     { name: 'Manage Sitemap', path: '/admin/dashboard/sitemap', icon: FileCode },
+    { name: 'SMTP Settings', path: '/admin/dashboard/smtp', icon: Key },
     { name: 'Inquiries', path: '/admin/dashboard/contacts', icon: Mail, badge: contacts.length },
   ];
 

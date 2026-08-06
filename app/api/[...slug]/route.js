@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/utils/supabase';
+import { sendContactEmail } from '@/utils/mailer';
 
 // Simple environment-variable backed admin credentials
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
@@ -146,7 +147,31 @@ export async function POST(req, { params }) {
         .select()
         .single();
       if (error) throw error;
+
+      // Send email notification in background
+      sendContactEmail({ name, email, phone, company, message }).catch((err) => {
+        console.error('Failed to send contact notification email:', err);
+      });
+
       return NextResponse.json({ ...data, _id: data.id });
+    }
+
+    // 2.5 Test SMTP Email (Admin Only)
+    if (route === 'test-smtp') {
+      if (!isAuthenticated(req)) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      }
+      const result = await sendContactEmail({
+        name: 'Admin Test User',
+        email: body.testEmail || 'info@aetherrfid.com',
+        phone: '+91-7042436155',
+        company: 'Aether RFID Admin Test',
+        message: 'This is a test notification email sent directly from your Aether RFID Admin Dashboard to verify Hostinger / SMTP Email settings.'
+      });
+      if (!result.success) {
+        return NextResponse.json({ message: result.error || 'Failed to send test email' }, { status: 400 });
+      }
+      return NextResponse.json({ success: true, message: 'Test email sent successfully!' });
     }
 
     // --- PROTECTED POST ROUTES (ADMIN ONLY) ---

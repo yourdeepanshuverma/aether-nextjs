@@ -141,5 +141,13 @@ export const api = {
     request(`/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
+    }),
+
+  // Test SMTP Email
+  testSmtp: (testEmail, token) => 
+    request('/test-smtp', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ testEmail })
     })
 };

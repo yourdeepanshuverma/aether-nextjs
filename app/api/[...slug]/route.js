@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/utils/supabase';
-import { sendContactEmail } from '@/utils/mailer';
+import { sendContactEmail, sendThankYouEmail } from '@/utils/mailer';
 
 // Simple environment-variable backed admin credentials
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
@@ -148,9 +148,12 @@ export async function POST(req, { params }) {
         .single();
       if (error) throw error;
 
-      // Send email notification in background
-      sendContactEmail({ name, email, phone, company, message }).catch((err) => {
-        console.error('Failed to send contact notification email:', err);
+      // Send email notifications in background (1. Admin Notification, 2. User Thank You Email)
+      Promise.allSettled([
+        sendContactEmail({ name, email, phone, company, message }),
+        sendThankYouEmail({ name, email, phone, company, message })
+      ]).catch((err) => {
+        console.error('Failed to send contact emails:', err);
       });
 
       return NextResponse.json({ ...data, _id: data.id });

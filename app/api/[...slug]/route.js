@@ -81,7 +81,7 @@ export async function GET(req, { params }) {
     if (route === 'team') {
       const { data, error } = await supabase.from('team').select('*').order('created_at', { ascending: true });
       if (error) throw error;
-      const formatted = data.map(t => ({ ...t, _id: t.id }));
+      const formatted = data.map(t => ({ ...t, _id: t.id, enabled: t.enabled !== false }));
       return NextResponse.json(formatted);
     }
 
@@ -196,14 +196,25 @@ export async function POST(req, { params }) {
 
     // 4. Create Team Member
     if (route === 'team') {
-      const { name, role, bio, image } = body;
-      const { data, error } = await supabase
+      const { name, role, bio, image, enabled } = body;
+      const payload = { name, role, bio, image };
+      if (typeof enabled !== 'undefined') payload.enabled = enabled;
+
+      let { data, error } = await supabase
         .from('team')
-        .insert({ name, role, bio, image })
+        .insert(payload)
         .select()
         .single();
+
+      if (error && error.message?.includes('enabled')) {
+        delete payload.enabled;
+        const res = await supabase.from('team').insert(payload).select().single();
+        data = res.data;
+        error = res.error;
+      }
+
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id });
+      return NextResponse.json({ ...data, _id: data.id, enabled: enabled !== false });
     }
 
     // 5. Create Product
@@ -272,15 +283,26 @@ export async function PUT(req, { params }) {
       if (!isUuid(idOrKey)) {
         return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
       }
-      const { name, role, bio, image } = body;
-      const { data, error } = await supabase
+      const { name, role, bio, image, enabled } = body;
+      const payload = { name, role, bio, image };
+      if (typeof enabled !== 'undefined') payload.enabled = enabled;
+
+      let { data, error } = await supabase
         .from('team')
-        .update({ name, role, bio, image })
+        .update(payload)
         .eq('id', idOrKey)
         .select()
         .single();
+
+      if (error && error.message?.includes('enabled')) {
+        delete payload.enabled;
+        const res = await supabase.from('team').update(payload).eq('id', idOrKey).select().single();
+        data = res.data;
+        error = res.error;
+      }
+
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id });
+      return NextResponse.json({ ...data, _id: data.id, enabled: enabled !== false });
     }
 
     // 4. Update Product

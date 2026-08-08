@@ -19,6 +19,32 @@ function isAuthenticated(req) {
   return token === ADMIN_TOKEN;
 }
 
+// Helpers for persisting team visibility map in site_content table
+async function getTeamVisibilityMap() {
+  try {
+    const { data } = await supabase
+      .from('site_content')
+      .select('content')
+      .eq('key', 'team-visibility')
+      .maybeSingle();
+    return data?.content || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setTeamVisibility(id, isEnabled) {
+  try {
+    const map = await getTeamVisibilityMap();
+    map[id] = isEnabled;
+    await supabase
+      .from('site_content')
+      .upsert({ key: 'team-visibility', content: map, updated_at: new Date() });
+  } catch (e) {
+    console.error('Failed to update team visibility map:', e);
+  }
+}
+
 // CATCH-ALL GET HANDLER
 export async function GET(req, { params }) {
   const { slug } = await params;
@@ -81,7 +107,18 @@ export async function GET(req, { params }) {
     if (route === 'team') {
       const { data, error } = await supabase.from('team').select('*').order('created_at', { ascending: true });
       if (error) throw error;
-      const formatted = data.map(t => ({ ...t, _id: t.id, enabled: t.enabled !== false }));
+
+      const visMap = await getTeamVisibilityMap();
+      const formatted = data.map(t => {
+        let isEnabled = t.enabled;
+        if (typeof visMap[t.id] !== 'undefined') {
+          isEnabled = visMap[t.id];
+        }
+        if (typeof isEnabled === 'undefined') {
+          isEnabled = true;
+        }
+        return { ...t, _id: t.id, enabled: !!isEnabled };
+      });
       return NextResponse.json(formatted);
     }
 
@@ -214,7 +251,13 @@ export async function POST(req, { params }) {
       }
 
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id, enabled: enabled !== false });
+
+      const isEnabled = enabled !== false;
+      if (data?.id) {
+        await setTeamVisibility(data.id, isEnabled);
+      }
+
+      return NextResponse.json({ ...data, _id: data.id, enabled: isEnabled });
     }
 
     // 5. Create Product
@@ -302,7 +345,11 @@ export async function PUT(req, { params }) {
       }
 
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id, enabled: enabled !== false });
+
+      const isEnabled = enabled !== false;
+      await setTeamVisibility(idOrKey, isEnabled);
+
+      return NextResponse.json({ ...data, _id: data.id, enabled: isEnabled });
     }
 
     // 4. Update Product

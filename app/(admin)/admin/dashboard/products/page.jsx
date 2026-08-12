@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { supabase } from '@/utils/supabase';
-import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers, Eye, EyeOff } from 'lucide-react';
 
 export default function ProductsManager() {
   const [uploading, setUploading] = useState(false);
@@ -17,7 +17,8 @@ export default function ProductsManager() {
     name: '',
     image: '',
     category: 'rfid-hardware',
-    specs: {}
+    specs: {},
+    enabled: true
   });
 
   const { 
@@ -132,7 +133,8 @@ export default function ProductsManager() {
       name: '',
       image: '',
       category: 'rfid-hardware',
-      specs: {}
+      specs: {},
+      enabled: true
     });
     setProductModal({ show: true, mode: 'create', id: null });
   };
@@ -142,9 +144,21 @@ export default function ProductsManager() {
       name: product.name,
       image: product.image,
       category: product.category,
-      specs: product.specs || {}
+      specs: product.specs || {},
+      enabled: product.enabled !== false
     });
     setProductModal({ show: true, mode: 'edit', id: product._id });
+  };
+
+  const handleToggleVisibility = async (product) => {
+    const currentEnabled = product.enabled !== false;
+    const updatedProduct = { ...product, enabled: !currentEnabled };
+    try {
+      await editProduct(product._id, updatedProduct);
+      showStatus(`Product ${!currentEnabled ? 'enabled' : 'disabled'} successfully!`);
+    } catch (err) {
+      showStatus("", "Failed to update product visibility.");
+    }
   };
 
   const handleProductSubmit = async (e) => {
@@ -164,7 +178,8 @@ export default function ProductsManager() {
         name: productForm.name,
         image: productForm.image,
         category: productForm.category,
-        specs: cleanedSpecs
+        specs: cleanedSpecs,
+        enabled: productForm.enabled
       };
 
       if (productModal.mode === 'create') {
@@ -312,7 +327,23 @@ export default function ProductsManager() {
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredList.map((product) => (
-          <div key={product._id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+          <div key={product._id} className={`bg-white rounded-3xl p-5 border flex flex-col justify-between relative transition-all ${product.enabled === false ? 'opacity-60 bg-gray-50 border-dashed border-gray-300' : 'border-gray-100 shadow-sm hover:shadow-md'}`}>
+            
+            {/* Visibility Toggle Badge */}
+            <button
+              type="button"
+              onClick={() => handleToggleVisibility(product)}
+              className={`absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1 transition-all z-10 ${
+                product.enabled !== false 
+                  ? "bg-emerald-100 text-emerald-800 border border-emerald-300" 
+                  : "bg-gray-200 text-gray-600 border border-gray-300"
+              }`}
+              title={product.enabled !== false ? "Click to Hide on website" : "Click to Show on website"}
+            >
+              {product.enabled !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+              <span>{product.enabled !== false ? "Visible" : "Hidden"}</span>
+            </button>
+
             <div>
               <div className="h-44 w-full rounded-2xl overflow-hidden mb-4 bg-gray-50 flex items-center justify-center p-4">
                 <img 
@@ -538,6 +569,20 @@ export default function ProductsManager() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Visibility Checkbox */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <input
+                  type="checkbox"
+                  id="productEnabledCheck"
+                  checked={productForm.enabled !== false}
+                  onChange={(e) => setProductForm({ ...productForm, enabled: e.target.checked })}
+                  className="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange cursor-pointer"
+                />
+                <label htmlFor="productEnabledCheck" className="text-xs font-bold text-gray-700 cursor-pointer select-none">
+                  Show on Website (Visible to Public)
+                </label>
               </div>
 
               {/* Submit Buttons */}

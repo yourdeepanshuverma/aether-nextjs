@@ -100,7 +100,7 @@ const RFIDTags = () => {
 
   // Filter products by tags category
   const tagsList = useMemo(() => {
-    return products.filter(p => p.category === 'rfid-tags');
+    return products.filter(p => p.category === 'rfid-tags' && p.enabled !== false);
   }, [products]);
 
   // Extract unique subcategory types dynamically from active tags products

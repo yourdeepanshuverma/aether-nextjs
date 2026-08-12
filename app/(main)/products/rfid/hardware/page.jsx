@@ -83,7 +83,7 @@ const RFIDHardware = () => {
 
   // Filter products by hardware category
   const hardwareList = useMemo(() => {
-    return products.filter(p => p.category === 'rfid-hardware');
+    return products.filter(p => p.category === 'rfid-hardware' && p.enabled !== false);
   }, [products]);
 
   // Extract unique subcategory types dynamically from active hardware products

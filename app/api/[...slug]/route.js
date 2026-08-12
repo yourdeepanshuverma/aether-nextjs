@@ -45,6 +45,32 @@ async function setTeamVisibility(id, isEnabled) {
   }
 }
 
+// Helpers for persisting product visibility map in site_content table
+async function getProductVisibilityMap() {
+  try {
+    const { data } = await supabase
+      .from('site_content')
+      .select('content')
+      .eq('key', 'product-visibility')
+      .maybeSingle();
+    return data?.content || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function setProductVisibility(id, isEnabled) {
+  try {
+    const map = await getProductVisibilityMap();
+    map[id] = isEnabled;
+    await supabase
+      .from('site_content')
+      .upsert({ key: 'product-visibility', content: map, updated_at: new Date() });
+  } catch (e) {
+    console.error('Failed to update product visibility map:', e);
+  }
+}
+
 // CATCH-ALL GET HANDLER
 export async function GET(req, { params }) {
   const { slug } = await params;
@@ -141,11 +167,21 @@ export async function GET(req, { params }) {
         }
         const { data, error } = await supabase.from('products').select('*').eq('id', idOrKey).single();
         if (error) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-        return NextResponse.json({ ...data, _id: data.id });
+        const visMap = await getProductVisibilityMap();
+        let isEnabled = data.enabled;
+        if (typeof visMap[data.id] !== 'undefined') isEnabled = visMap[data.id];
+        if (typeof isEnabled === 'undefined') isEnabled = true;
+        return NextResponse.json({ ...data, _id: data.id, enabled: !!isEnabled });
       } else {
         const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        const formatted = data.map(p => ({ ...p, _id: p.id }));
+        const visMap = await getProductVisibilityMap();
+        const formatted = data.map(p => {
+          let isEnabled = p.enabled;
+          if (typeof visMap[p.id] !== 'undefined') isEnabled = visMap[p.id];
+          if (typeof isEnabled === 'undefined') isEnabled = true;
+          return { ...p, _id: p.id, enabled: !!isEnabled };
+        });
         return NextResponse.json(formatted);
       }
     }
@@ -262,14 +298,31 @@ export async function POST(req, { params }) {
 
     // 5. Create Product
     if (route === 'products') {
-      const { name, image, category, specs } = body;
-      const { data, error } = await supabase
+      const { name, image, category, specs, enabled } = body;
+      const payload = { name, image, category, specs };
+      if (typeof enabled !== 'undefined') payload.enabled = enabled;
+
+      let { data, error } = await supabase
         .from('products')
-        .insert({ name, image, category, specs })
+        .insert(payload)
         .select()
         .single();
+
+      if (error && error.message?.includes('enabled')) {
+        delete payload.enabled;
+        const res = await supabase.from('products').insert(payload).select().single();
+        data = res.data;
+        error = res.error;
+      }
+
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id });
+
+      const isEnabled = enabled !== false;
+      if (data?.id) {
+        await setProductVisibility(data.id, isEnabled);
+      }
+
+      return NextResponse.json({ ...data, _id: data.id, enabled: isEnabled });
     }
 
     return NextResponse.json({ message: 'Route not found' }, { status: 404 });
@@ -357,15 +410,30 @@ export async function PUT(req, { params }) {
       if (!isUuid(idOrKey)) {
         return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
       }
-      const { name, image, category, specs } = body;
-      const { data, error } = await supabase
+      const { name, image, category, specs, enabled } = body;
+      const payload = { name, image, category, specs };
+      if (typeof enabled !== 'undefined') payload.enabled = enabled;
+
+      let { data, error } = await supabase
         .from('products')
-        .update({ name, image, category, specs })
+        .update(payload)
         .eq('id', idOrKey)
         .select()
         .single();
+
+      if (error && error.message?.includes('enabled')) {
+        delete payload.enabled;
+        const res = await supabase.from('products').update(payload).eq('id', idOrKey).select().single();
+        data = res.data;
+        error = res.error;
+      }
+
       if (error) throw error;
-      return NextResponse.json({ ...data, _id: data.id });
+
+      const isEnabled = enabled !== false;
+      await setProductVisibility(idOrKey, isEnabled);
+
+      return NextResponse.json({ ...data, _id: data.id, enabled: isEnabled });
     }
 
     return NextResponse.json({ message: 'Route not found' }, { status: 404 });

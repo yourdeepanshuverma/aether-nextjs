@@ -1,28 +1,32 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { 
-  Cpu, 
-  Layers, 
-  ShieldCheck, 
-  ArrowRight, 
-  Check, 
-  LayoutDashboard, 
-  Database,
-  Truck,
-  Package,
-  Activity,
-  Workflow,
-  Settings2,
-  FileCheck,
-  Tag,
-  Eye,
-  TrendingUp,
-  ClipboardList,
+import {
+  ArrowRight,
   BarChart3,
-  CheckCircle,
-  ChevronRight
+  Check,
+  ChevronRight,
+  ClipboardList,
+  Cpu,
+  Database,
+  Eye,
+  FileCheck,
+  Layers,
+  LayoutDashboard,
+  Settings2,
+  ShieldCheck,
+  Tag,
+  TrendingUp,
+  Workflow,
 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
+export const metadata = {
+  title: "RFID & IoT Solutions for Manufacturing Industry India | Aether RFID",
+  description:
+    "RFID and IoT-based solutions for manufacturing industry in India — asset tracking, factory automation & real-time production visibility.",
+  keywords:
+    "RFID solution provider India, RFID for manufacturing India, factory automation RFID",
+};
 
 const ManufacturingAutomation = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -31,43 +35,46 @@ const ManufacturingAutomation = () => {
     { value: "100%", label: "Material traceability across lifecycle" },
     { value: "Real-Time", label: "Work-in-progress tracking feedback" },
     { value: "Automated", label: "Identification at workstation lines" },
-    { value: "Connected", label: "Intelligent ERP/MES/WMS integrations" }
+    { value: "Connected", label: "Intelligent ERP/MES/WMS integrations" },
   ];
 
   const workflowSteps = [
     {
       title: "Raw Material Identification",
       tagline: "RFID tagging upon material arrival and warehousing intake",
-      description: "RFID tagging of raw materials, bins, pallets, and components upon receipt.",
+      description:
+        "RFID tagging of raw materials, bins, pallets, and components upon receipt.",
       bullets: [
         "Pallets and bins tracked instantly",
         "Verification upon gate arrival",
-        "Raw store inventory logging"
+        "Raw store inventory logging",
       ],
-      image: "/assets/industries/manufacturing-2.png"
+      image: "/assets/industries/manufacturing-2.png",
     },
     {
       title: "Production & WIP Tracking",
       tagline: "Live flow status feedback of parts across assembly lines",
-      description: "Real-time tracking of work-in-progress (WIP) through production stages. Automated identification at workstations and assembly lines.",
+      description:
+        "Real-time tracking of work-in-progress (WIP) through production stages. Automated identification at workstations and assembly lines.",
       bullets: [
         "Workstation passive scanning",
         "Delayed assembly warnings",
-        "Bottleneck identification logs"
+        "Bottleneck identification logs",
       ],
-      image: "/assets/industries/manufacturing-wip-tracking-v2.png"
+      image: "/assets/industries/manufacturing-wip-tracking-v2.png",
     },
     {
       title: "Warehouse & Logistics",
       tagline: "Automatic stock updates and dispatch check validations",
-      description: "Accurate inventory management and automated dispatch verification. Real-time tracking of finished goods from warehouse to customer.",
+      description:
+        "Accurate inventory management and automated dispatch verification. Real-time tracking of finished goods from warehouse to customer.",
       bullets: [
         "Finished goods tracking",
         "Portal-based dock loading audits",
-        "Minimized dispatch errors"
+        "Minimized dispatch errors",
       ],
-      image: "/assets/industries/manufacturing-dock-dispatch-v2.png"
-    }
+      image: "/assets/industries/manufacturing-dock-dispatch-v2.png",
+    },
   ];
 
   const ecosystemItems = [
@@ -75,10 +82,13 @@ const ManufacturingAutomation = () => {
     { title: "Fixed RFID Readers & Antennas", icon: Cpu },
     { title: "RFID Handheld Readers", icon: Layers },
     { title: "RFID Portals & Workstation Readers", icon: Workflow },
-    { title: "RFID Middleware & Manufacturing Dashboard", icon: LayoutDashboard },
+    {
+      title: "RFID Middleware & Manufacturing Dashboard",
+      icon: LayoutDashboard,
+    },
     { title: "ERP/MES/WMS Integration", icon: Database },
     { title: "Installation, Commissioning & Training", icon: FileCheck },
-    { title: "Annual Maintenance & Technical Support", icon: Settings2 }
+    { title: "Annual Maintenance & Technical Support", icon: Settings2 },
   ];
 
   const benefits = [
@@ -89,7 +99,7 @@ const ManufacturingAutomation = () => {
     { title: "Faster Inventory Audits", icon: ClipboardList },
     { title: "Optimised Asset Utilisation", icon: Settings2 },
     { title: "Enhanced Quality & Compliance", icon: FileCheck },
-    { title: "Data-Driven Production Insights", icon: BarChart3 }
+    { title: "Data-Driven Production Insights", icon: BarChart3 },
   ];
 
   return (
@@ -98,21 +108,23 @@ const ManufacturingAutomation = () => {
       <section className="pt-20 pb-12 px-5 max-w-[1200px] mx-auto text-center relative">
         <div className="absolute top-10 left-10 w-24 h-24 bg-brand-orange/5 rounded-full blur-xl pointer-events-none"></div>
         <div className="absolute top-20 right-20 w-32 h-32 bg-brand-blue/5 rounded-full blur-2xl pointer-events-none"></div>
-        
+
         <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-tight max-w-4xl mx-auto tracking-tight">
           Connecting materials, <br />
-          <span className="text-brand-orange">machines, processes, and people</span>
+          <span className="text-brand-orange">
+            machines, processes, and people
+          </span>
         </h1>
-        
+
         <p className="text-slate-500 text-lg md:text-xl max-w-3xl mx-auto mb-12 font-medium">
           Smart Manufacturing with End-to-End RFID Visibility
         </p>
 
         {/* Hero Banner Image */}
         <div className="max-w-[1100px] mx-auto rounded-[32px] overflow-hidden shadow-2xl border border-slate-100 mb-12 relative bg-slate-100">
-          <img 
-            src="/assets/industries/manufacturing-1.jpeg" 
-            alt="Smart Manufacturing Automation" 
+          <img
+            src="/assets/industries/manufacturing-1.jpeg"
+            alt="Smart Manufacturing Automation"
             className="w-full h-auto block"
           />
         </div>
@@ -131,21 +143,31 @@ const ManufacturingAutomation = () => {
           <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 mb-8 max-w-4xl mx-auto leading-snug">
             RFID-Based Manufacturing Automation
           </h2>
-          
+
           <p className="text-slate-600 text-base md:text-lg max-w-3xl mx-auto leading-relaxed mb-12">
-            Aether RFID delivers a complete RFID ecosystem that enables manufacturers to achieve real-time visibility, automate material movement, and ensure complete traceability across the production lifecycle.
+            Aether RFID delivers a complete RFID ecosystem that enables
+            manufacturers to achieve real-time visibility, automate material
+            movement, and ensure complete traceability across the production
+            lifecycle.
           </p>
 
           {/* Stats Row with Connecting Dashed Line */}
           <div className="relative max-w-[1000px] mx-auto">
             {/* Horizontal Line behind cards */}
             <div className="hidden lg:block absolute top-1/2 left-12 right-12 h-[2px] border-t-2 border-dashed border-slate-200 -translate-y-1/2 z-0"></div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-center items-center text-center">
-                  <div className="text-3xl font-extrabold text-brand-orange mb-2">{stat.value}</div>
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider leading-relaxed">{stat.label}</div>
+                <div
+                  key={index}
+                  className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm flex flex-col justify-center items-center text-center"
+                >
+                  <div className="text-3xl font-extrabold text-brand-orange mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider leading-relaxed">
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -156,9 +178,12 @@ const ManufacturingAutomation = () => {
       {/* 3. STICKY INTERNAL NAVIGATION & WORKFLOW */}
       <section className="py-20 px-5 max-w-[1200px] mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Solution Overview</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">
+            Solution Overview
+          </h2>
           <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto">
-            Aether RFID tracks raw resources, parts workflow, and finished inventory routing.
+            Aether RFID tracks raw resources, parts workflow, and finished
+            inventory routing.
           </p>
         </div>
 
@@ -170,8 +195,8 @@ const ManufacturingAutomation = () => {
                 key={index}
                 onClick={() => setActiveTab(index)}
                 className={`pb-4 text-sm md:text-base font-extrabold whitespace-nowrap transition-all border-b-2 relative ${
-                  activeTab === index 
-                    ? "border-brand-orange text-brand-orange" 
+                  activeTab === index
+                    ? "border-brand-orange text-brand-orange"
                     : "border-transparent text-slate-400 hover:text-slate-600"
                 }`}
               >
@@ -191,7 +216,8 @@ const ManufacturingAutomation = () => {
               RFID-enabled {workflowSteps[activeTab].title.toLowerCase()}
             </h3>
             <p className="text-slate-600 leading-relaxed text-sm md:text-base">
-              {workflowSteps[activeTab].description || workflowSteps[activeTab].tagline}
+              {workflowSteps[activeTab].description ||
+                workflowSteps[activeTab].tagline}
             </p>
             <div className="space-y-3 pt-2">
               {workflowSteps[activeTab].bullets.map((bullet, i) => (
@@ -199,17 +225,19 @@ const ManufacturingAutomation = () => {
                   <div className="mt-1 bg-brand-green/10 text-brand-green p-0.5 rounded-full shrink-0">
                     <Check size={12} className="stroke-[3]" />
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-700 font-semibold">{bullet}</span>
+                  <span className="text-xs sm:text-sm text-slate-700 font-semibold">
+                    {bullet}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
-          
+
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white aspect-[4/3] flex items-center justify-center p-3 sm:p-5 group">
-            <img 
-              src={workflowSteps[activeTab].image} 
+            <img
+              src={workflowSteps[activeTab].image}
               alt={workflowSteps[activeTab].title}
-              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" 
+              className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
             />
           </div>
         </div>
@@ -223,7 +251,8 @@ const ManufacturingAutomation = () => {
               Benefits of RFID for the manufacturing industry
             </h2>
             <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto">
-              How RFID delivers raw tracing, material validation, and optimized shop floor operations.
+              How RFID delivers raw tracing, material validation, and optimized
+              shop floor operations.
             </p>
           </div>
 
@@ -231,7 +260,7 @@ const ManufacturingAutomation = () => {
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
-                <div 
+                <div
                   key={index}
                   className="bg-white border border-slate-200/80 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all"
                 >
@@ -251,9 +280,12 @@ const ManufacturingAutomation = () => {
       {/* 5. COMPLETE SOLUTION SCOPE */}
       <section className="py-20 px-5 max-w-[1200px] mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Complete Solution Scope</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">
+            Complete Solution Scope
+          </h2>
           <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto">
-            Aether RFID supplies and implements the complete manufacturing automation ecosystem.
+            Aether RFID supplies and implements the complete manufacturing
+            automation ecosystem.
           </p>
         </div>
 
@@ -261,7 +293,7 @@ const ManufacturingAutomation = () => {
           {ecosystemItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div 
+              <div
                 key={index}
                 className="bg-white border border-slate-200/85 p-6 rounded-2xl flex items-start gap-4 shadow-sm"
               >
@@ -281,7 +313,7 @@ const ManufacturingAutomation = () => {
       <section className="py-20 px-5 bg-slate-900 text-white text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand-orange/10 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-brand-blue/10 rounded-full blur-[100px] pointer-events-none"></div>
-        
+
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
           <span className="text-brand-orange text-xs font-extrabold uppercase tracking-[0.2em] block">
             Aether RFID - Smart Manufacturing Automation
@@ -290,10 +322,11 @@ const ManufacturingAutomation = () => {
             Ready to Automate Your Manufacturing Line?
           </h2>
           <p className="text-slate-300 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-            Connect materials, machines, processes, and people. Speak with our industrial RFID automation engineers today.
+            Connect materials, machines, processes, and people. Speak with our
+            industrial RFID automation engineers today.
           </p>
           <div className="pt-4">
-            <Link 
+            <Link
               href="/contact"
               className="inline-flex items-center gap-3 px-8 py-4 bg-brand-orange hover:bg-brand-orange/90 text-white font-extrabold rounded-2xl shadow-xl shadow-brand-orange/25 transition-all transform hover:-translate-y-0.5 text-base"
             >

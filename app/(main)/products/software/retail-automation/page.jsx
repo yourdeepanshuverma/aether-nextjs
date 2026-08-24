@@ -1,15 +1,14 @@
 "use client";
+import { Layout, ShieldCheck, ShoppingBag, Zap } from "lucide-react";
 import Link from "next/link";
-import {
-  Layout,
-  BarChart,
-  ShoppingBag,
-  ShieldCheck,
-  Download,
-  ArrowRight,
-  Zap,
-  RefreshCw,
-} from "lucide-react";
+
+export const metadata = {
+  title: "RFID Retail Automation & Inventory Solution India | Aether RFID",
+  description:
+    "Top RFID retail solution provider in India — apparel tag tracking, inventory visibility & automated stock management for retail chains & fashion brands.",
+  keywords:
+    "top RFID retail solution provider in India, RFID apparel tracking solution India, RFID inventory management solution India",
+};
 
 const RetailAutomation = () => {
   return (

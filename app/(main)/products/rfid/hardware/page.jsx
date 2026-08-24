@@ -1,15 +1,31 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
-import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
-import { Cpu, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw, LayoutGrid, List, Table } from "lucide-react";
+import {
+  Filter,
+  LayoutGrid,
+  List,
+  RefreshCw,
+  SlidersHorizontal,
+  Table,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+
+export const metadata = {
+  title:
+    "RFID Reader Suppliers in India | Zebra, Chainway Hardware – Aether RFID",
+  description:
+    "Leading RFID reader suppliers in India — Zebra FX9600, Chainway handheld & fixed readers for retail, warehouse & asset tracking applications.",
+  keywords:
+    "RFID reader suppliers in India, Zebra FX9600 RFID reader, Chainway readers, UHF reader supplier, RFID handheld reader supplier India, top 10 RFID reader provider in India",
+};
 
 const RFIDHardware = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [enquiryProduct, setEnquiryProduct] = useState(null);
-  const [selectedType, setSelectedType] = useState("all"); 
-  const [selectedRange, setSelectedRange] = useState("all"); 
+  const [selectedType, setSelectedType] = useState("all");
+  const [selectedRange, setSelectedRange] = useState("all");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState("asc"); // 'asc' (A to Z) or 'desc' (Z to A)
@@ -38,21 +54,29 @@ const RFIDHardware = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           phone: formData.mobile,
           company: formData.company,
-          message: `Product Enquiry for: ${enquiryProduct?.name || 'RFID Hardware'} (Category: RFID Hardware)\n\nRequirement details:\n${formData.requirement}`
-        })
+          message: `Product Enquiry for: ${enquiryProduct?.name || "RFID Hardware"} (Category: RFID Hardware)\n\nRequirement details:\n${formData.requirement}`,
+        }),
       });
       if (!response.ok) throw new Error("Submission failed");
-      alert("Thank you! Your enquiry has been submitted. We will contact you soon.");
+      alert(
+        "Thank you! Your enquiry has been submitted. We will contact you soon.",
+      );
       setEnquiryProduct(null);
-      setFormData({ name: "", mobile: "", email: "", company: "", requirement: "" });
+      setFormData({
+        name: "",
+        mobile: "",
+        email: "",
+        company: "",
+        requirement: "",
+      });
     } catch (err) {
       alert("Failed to submit enquiry: " + err.message);
     }
@@ -62,34 +86,44 @@ const RFIDHardware = () => {
   const getHardwareType = (product) => {
     if (product.specs?.type) return product.specs.type;
     const name = product.name.toLowerCase();
-    const desc = (product.specs?.description || '').toLowerCase();
-    
-    if (name.includes('antenna') || desc.includes('antenna')) return 'Antenna';
-    if (name.includes('fixed') || desc.includes('fixed') || name.includes('ura4') || name.includes('u300') || name.includes('r3') || name.includes('fx9600')) return 'Fixed Reader';
-    return 'Handheld Reader';
+    const desc = (product.specs?.description || "").toLowerCase();
+
+    if (name.includes("antenna") || desc.includes("antenna")) return "Antenna";
+    if (
+      name.includes("fixed") ||
+      desc.includes("fixed") ||
+      name.includes("ura4") ||
+      name.includes("u300") ||
+      name.includes("r3") ||
+      name.includes("fx9600")
+    )
+      return "Fixed Reader";
+    return "Handheld Reader";
   };
 
   // Helper to check range
   const getRangeType = (product) => {
-    const range = (product.specs?.read_range || '').toLowerCase();
-    if (!range) return 'short';
+    const range = (product.specs?.read_range || "").toLowerCase();
+    if (!range) return "short";
     const match = range.match(/\d+/);
     if (match) {
       const meters = parseInt(match[0], 10);
-      return meters >= 8 ? 'long' : 'short';
+      return meters >= 8 ? "long" : "short";
     }
-    return 'short';
+    return "short";
   };
 
   // Filter products by hardware category
   const hardwareList = useMemo(() => {
-    return products.filter(p => p.category === 'rfid-hardware' && p.enabled !== false);
+    return products.filter(
+      (p) => p.category === "rfid-hardware" && p.enabled !== false,
+    );
   }, [products]);
 
   // Extract unique subcategory types dynamically from active hardware products
   const hardwareTypes = useMemo(() => {
     const types = new Set();
-    hardwareList.forEach(p => {
+    hardwareList.forEach((p) => {
       const t = getHardwareType(p);
       if (t) types.add(t);
     });
@@ -100,16 +134,22 @@ const RFIDHardware = () => {
   const filteredProducts = useMemo(() => {
     const list = hardwareList.filter((product) => {
       // 1. Search Query filter
-      const matchesSearch = 
+      const matchesSearch =
         product.name.toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.description || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase());
+        (product.specs?.description || "")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (product.specs?.application || "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
 
       // 2. Hardware Type filter
-      const matchesType = selectedType === "all" || getHardwareType(product) === selectedType;
+      const matchesType =
+        selectedType === "all" || getHardwareType(product) === selectedType;
 
       // 3. Read Range filter
-      const matchesRange = selectedRange === "all" || getRangeType(product) === selectedRange;
+      const matchesRange =
+        selectedRange === "all" || getRangeType(product) === selectedRange;
 
       return matchesSearch && matchesType && matchesRange;
     });
@@ -145,7 +185,10 @@ const RFIDHardware = () => {
             </div>
             <div className="space-y-8 animate-pulse">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm">
+                <div
+                  key={n}
+                  className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm"
+                >
                   <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
                     <div className="w-full h-[260px] bg-slate-100 rounded-2xl"></div>
                     <div className="space-y-4">
@@ -172,10 +215,15 @@ const RFIDHardware = () => {
       {/* Hero Header */}
       <section className="bg-slate-900 text-white py-16 px-5 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto text-center">
-          <span className="text-brand-orange uppercase text-xs tracking-[0.25em] font-extrabold mb-3 inline-block">Hardware Catalog</span>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight">RFID Hardware Products</h1>
+          <span className="text-brand-orange uppercase text-xs tracking-[0.25em] font-extrabold mb-3 inline-block">
+            Hardware Catalog
+          </span>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">
+            RFID Hardware Products
+          </h1>
           <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
-            Premium RFID handheld readers, long-range fixed readers, and specialized high-gain antennas.
+            Premium RFID handheld readers, long-range fixed readers, and
+            specialized high-gain antennas.
           </p>
         </div>
       </section>
@@ -183,18 +231,17 @@ const RFIDHardware = () => {
       {/* Catalog Container */}
       <section className="py-12 px-5 lg:px-10">
         <div className="max-w-[1400px] mx-auto">
-          
           {/* Mobile Filter Toggle Button */}
           <div className="flex md:hidden items-center justify-between gap-4 mb-6">
-            <button 
+            <button
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
               className="flex-1 flex items-center justify-center gap-2 bg-brand-blue text-white py-3 px-4 rounded-xl text-sm font-bold shadow-sm"
             >
               <Filter size={16} />
               {mobileFiltersOpen ? "Hide Filters" : "Show Filters & Search"}
             </button>
-            {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
-              <button 
+            {(selectedType !== "all" || selectedRange !== "all" || search) && (
+              <button
                 onClick={resetFilters}
                 className="bg-gray-200 text-gray-700 p-3 rounded-xl hover:bg-gray-300 transition-colors"
                 title="Reset Filters"
@@ -205,15 +252,19 @@ const RFIDHardware = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
-            
             {/* 1. FILTER SIDEBAR */}
-            <aside className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 md:sticky md:top-24 md:max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar`}>
+            <aside
+              className={`${mobileFiltersOpen ? "block" : "hidden"} md:block bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 md:sticky md:top-24 md:max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar`}
+            >
               <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <SlidersHorizontal size={16} className="text-brand-orange" /> Filters
+                  <SlidersHorizontal size={16} className="text-brand-orange" />{" "}
+                  Filters
                 </span>
-                {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
-                  <button 
+                {(selectedType !== "all" ||
+                  selectedRange !== "all" ||
+                  search) && (
+                  <button
                     onClick={resetFilters}
                     className="text-[10px] font-bold text-red-600 hover:text-red-800 underline transition-all"
                   >
@@ -224,7 +275,9 @@ const RFIDHardware = () => {
 
               {/* Search input in sidebar */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Search Keywords</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Search Keywords
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. C72, Zebra..."
@@ -236,7 +289,9 @@ const RFIDHardware = () => {
 
               {/* Sort Order */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Sort Order</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Sort Order
+                </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -249,44 +304,52 @@ const RFIDHardware = () => {
 
               {/* Hardware Type Filter (Dynamic) */}
               <div className="space-y-3">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Product Type</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Product Type
+                </label>
                 <div className="space-y-1.5">
                   <button
                     onClick={() => setSelectedType("all")}
                     className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       selectedType === "all"
-                        ? 'bg-brand-blue text-white shadow-sm'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? "bg-brand-blue text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <span>All Hardware</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                      selectedType === "all"
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-100 text-slate-500'
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] ${
+                        selectedType === "all"
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
                       {hardwareList.length}
                     </span>
                   </button>
 
                   {hardwareTypes.map((type) => {
-                    const count = hardwareList.filter(p => getHardwareType(p) === type).length;
+                    const count = hardwareList.filter(
+                      (p) => getHardwareType(p) === type,
+                    ).length;
                     return (
                       <button
                         key={type}
                         onClick={() => setSelectedType(type)}
                         className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                           selectedType === type
-                            ? 'bg-brand-blue text-white shadow-sm'
-                            : 'text-slate-600 hover:bg-slate-50'
+                            ? "bg-brand-blue text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-50"
                         }`}
                       >
                         <span>{type}s</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                          selectedType === type
-                            ? 'bg-white/20 text-white'
-                            : 'bg-slate-100 text-slate-500'
-                        }`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[9px] ${
+                            selectedType === type
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
                           {count}
                         </span>
                       </button>
@@ -297,47 +360,55 @@ const RFIDHardware = () => {
 
               {/* Read Range Filter */}
               <div className="space-y-3 pt-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Read Range</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Read Range
+                </label>
                 <div className="space-y-1.5">
                   <button
                     onClick={() => setSelectedRange("all")}
                     className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       selectedRange === "all"
-                        ? 'bg-brand-blue text-white shadow-sm'
-                        : 'text-slate-600 hover:bg-slate-50'
+                        ? "bg-brand-blue text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <span>All Ranges</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                      selectedRange === "all"
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-100 text-slate-500'
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] ${
+                        selectedRange === "all"
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
                       {hardwareList.length}
                     </span>
                   </button>
 
                   {[
-                    { key: 'short', label: 'Short/Mid (< 8m)' },
-                    { key: 'long', label: 'Long Range (8m+)' }
+                    { key: "short", label: "Short/Mid (< 8m)" },
+                    { key: "long", label: "Long Range (8m+)" },
                   ].map((item) => {
-                    const count = hardwareList.filter(p => getRangeType(p) === item.key).length;
+                    const count = hardwareList.filter(
+                      (p) => getRangeType(p) === item.key,
+                    ).length;
                     return (
                       <button
                         key={item.key}
                         onClick={() => setSelectedRange(item.key)}
                         className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                           selectedRange === item.key
-                            ? 'bg-brand-blue text-white shadow-sm'
-                            : 'text-slate-600 hover:bg-slate-50'
+                            ? "bg-brand-blue text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-50"
                         }`}
                       >
                         <span>{item.label}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                          selectedRange === item.key
-                            ? 'bg-white/20 text-white'
-                            : 'bg-slate-100 text-slate-500'
-                        }`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[9px] ${
+                            selectedRange === item.key
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
                           {count}
                         </span>
                       </button>
@@ -349,12 +420,13 @@ const RFIDHardware = () => {
 
             {/* 2. PRODUCTS GRID LIST */}
             <main className="space-y-6">
-              
               {/* Filter Results header */}
               <div className="flex justify-between items-center bg-white border border-slate-200/60 p-4 px-6 rounded-2xl shadow-sm text-xs font-semibold text-slate-500">
                 <span>Showing {filteredProducts.length} hardware products</span>
                 <div className="flex items-center gap-4">
-                  {(selectedType !== 'all' || selectedRange !== 'all' || search) && (
+                  {(selectedType !== "all" ||
+                    selectedRange !== "all" ||
+                    search) && (
                     <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
                       Filters Active
                     </span>
@@ -365,8 +437,8 @@ const RFIDHardware = () => {
                       type="button"
                       onClick={() => setViewMode("grid")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "grid" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "grid"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="Grid View"
@@ -377,8 +449,8 @@ const RFIDHardware = () => {
                       type="button"
                       onClick={() => setViewMode("list")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "list" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "list"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="List View"
@@ -389,8 +461,8 @@ const RFIDHardware = () => {
                       type="button"
                       onClick={() => setViewMode("table")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "table" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "table"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="Table View"
@@ -417,12 +489,18 @@ const RFIDHardware = () => {
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
                         {filteredProducts.map((product, index) => (
-                          <tr key={product.id || index} className="hover:bg-slate-50/50 transition-colors">
+                          <tr
+                            key={product.id || index}
+                            className="hover:bg-slate-50/50 transition-colors"
+                          >
                             <td className="p-4 pl-6 font-semibold text-slate-900">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center p-1 shrink-0">
                                   <img
-                                    src={product.image || "/assets/placeholder-product.png"}
+                                    src={
+                                      product.image ||
+                                      "/assets/placeholder-product.png"
+                                    }
                                     alt={product.name}
                                     className="max-h-full max-w-full object-contain"
                                   />
@@ -435,8 +513,12 @@ const RFIDHardware = () => {
                                 {getHardwareType(product)}
                               </span>
                             </td>
-                            <td className="p-4">{product.specs?.read_range || 'N/A'}</td>
-                            <td className="p-4">{product.specs?.frequency || 'N/A'}</td>
+                            <td className="p-4">
+                              {product.specs?.read_range || "N/A"}
+                            </td>
+                            <td className="p-4">
+                              {product.specs?.frequency || "N/A"}
+                            </td>
                             <td className="p-4 text-right pr-6">
                               <button
                                 onClick={() => setEnquiryProduct(product)}
@@ -478,7 +560,10 @@ const RFIDHardware = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[200px] items-center border border-slate-100 mb-4">
                             <img
-                              src={product.image || "/assets/placeholder-product.png"}
+                              src={
+                                product.image ||
+                                "/assets/placeholder-product.png"
+                              }
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -490,11 +575,16 @@ const RFIDHardware = () => {
                               {getHardwareType(product)}
                             </span>
                             <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full">
-                              {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
+                              {product.specs?.read_range
+                                ? `Range: ${product.specs.read_range}`
+                                : "UHF Spec"}
                             </span>
                           </div>
 
-                          <h3 className="text-lg font-extrabold text-slate-900 mb-3 tracking-tight truncate" title={product.name}>
+                          <h3
+                            className="text-lg font-extrabold text-slate-900 mb-3 tracking-tight truncate"
+                            title={product.name}
+                          >
                             {product.name}
                           </h3>
 
@@ -503,7 +593,10 @@ const RFIDHardware = () => {
                               .filter(([key]) => key !== "type")
                               .slice(0, 4)
                               .map(([key, value]) => (
-                                <p key={key} className="text-slate-600 truncate">
+                                <p
+                                  key={key}
+                                  className="text-slate-600 truncate"
+                                >
                                   <span className="font-semibold text-slate-900">
                                     {labels[key] ||
                                       key
@@ -558,7 +651,10 @@ const RFIDHardware = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
                             <img
-                              src={product.image || "/assets/placeholder-product.png"}
+                              src={
+                                product.image ||
+                                "/assets/placeholder-product.png"
+                              }
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -571,7 +667,9 @@ const RFIDHardware = () => {
                                 {getHardwareType(product)}
                               </span>
                               <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
-                                {product.specs?.read_range ? `Range: ${product.specs.read_range}` : 'UHF Spec'}
+                                {product.specs?.read_range
+                                  ? `Range: ${product.specs.read_range}`
+                                  : "UHF Spec"}
                               </span>
                             </div>
 

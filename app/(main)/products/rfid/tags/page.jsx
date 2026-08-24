@@ -1,20 +1,16 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
-import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
 import {
-  Layers,
-  Zap,
-  ShieldCheck,
   Download,
-  ArrowRight,
   Filter,
-  SlidersHorizontal,
-  RefreshCw,
   LayoutGrid,
   List,
+  RefreshCw,
+  SlidersHorizontal,
   Table,
 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 export const metadata = {
   title:

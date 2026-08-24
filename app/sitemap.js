@@ -1,7 +1,7 @@
 const BASE_URL = "https://aetherrfid.com";
 
 // Helper to build a full URL
-const url = `${BASE_URL}${path}`;
+const url = (path) => `${BASE_URL}${path}`;
 
 export default function sitemap() {
   const lastModified = new Date();

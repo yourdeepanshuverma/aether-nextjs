@@ -2,13 +2,34 @@
 import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
-import { Layers, Zap, ShieldCheck, Download, ArrowRight, Filter, SlidersHorizontal, RefreshCw, LayoutGrid, List, Table } from "lucide-react";
+import {
+  Layers,
+  Zap,
+  ShieldCheck,
+  Download,
+  ArrowRight,
+  Filter,
+  SlidersHorizontal,
+  RefreshCw,
+  LayoutGrid,
+  List,
+  Table,
+} from "lucide-react";
+
+export const metadata = {
+  title:
+    "RFID Tags Manufacturer in India | UHF, Soft & Hard Tags – Aether RFID",
+  description:
+    "Top RFID tags manufacturer in India offering UHF RFID tags, soft tags, hard tags & bespoke apparel tags. Cost-effective, high-quality & internationally compliant.",
+  keywords:
+    "RFID tags manufacturer India, UHF RFID tag supplier, RFID UHF tags manufacturer India, top RFID apparel tag supplier India, NFC tags supplier",
+};
 
 const RFIDTags = () => {
   const [search, setSearch] = useState("");
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [enquiryProduct, setEnquiryProduct] = useState(null);
-  const [selectedType, setSelectedType] = useState("all"); 
+  const [selectedType, setSelectedType] = useState("all");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState("asc"); // 'asc' (A to Z) or 'desc' (Z to A)
@@ -37,21 +58,29 @@ const RFIDTags = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           phone: formData.mobile,
           company: formData.company,
-          message: `Product Enquiry for: ${enquiryProduct?.name || 'RFID Tag'} (Category: RFID Tags)\n\nRequirement details:\n${formData.requirement}`
-        })
+          message: `Product Enquiry for: ${enquiryProduct?.name || "RFID Tag"} (Category: RFID Tags)\n\nRequirement details:\n${formData.requirement}`,
+        }),
       });
       if (!response.ok) throw new Error("Submission failed");
-      alert("Thank you! Your enquiry has been submitted. We will contact you soon.");
+      alert(
+        "Thank you! Your enquiry has been submitted. We will contact you soon.",
+      );
       setEnquiryProduct(null);
-      setFormData({ name: "", mobile: "", email: "", company: "", requirement: "" });
+      setFormData({
+        name: "",
+        mobile: "",
+        email: "",
+        company: "",
+        requirement: "",
+      });
     } catch (err) {
       alert("Failed to submit enquiry: " + err.message);
     }
@@ -61,52 +90,89 @@ const RFIDTags = () => {
   const getTagType = (product) => {
     if (product.specs?.type) return product.specs.type;
     const name = product.name.toLowerCase();
-    const freq = (product.specs?.frequency_band || '').toLowerCase();
-    const body = (product.specs?.out_body || '').toLowerCase();
-    const app = (product.specs?.application || '').toLowerCase();
-    
+    const freq = (product.specs?.frequency_band || "").toLowerCase();
+    const body = (product.specs?.out_body || "").toLowerCase();
+    const app = (product.specs?.application || "").toLowerCase();
+
     // Explicitly check that 'hf' doesn't matching "uhf"
-    const isHf = (freq.includes('hf') && !freq.includes('uhf')) || freq.includes('nfc');
-    
-    if (isHf || name.includes('nfc') || name.includes('keychain') || name.includes('card')) return 'NFC Keychain & Card';
-    if (name.includes('ridge') || body.includes('abs') || body.includes('pcb') || body.includes('acrylic') || body.includes('plastic') || body.includes('pvc') || app.includes('metal')) return 'ABS/PCB On-Metal';
-    if (name.includes('traveler') || name.includes('rinse') || app.includes('windshield')) return 'Specialty Tag';
-    return 'Smart Label / Inlay';
+    const isHf =
+      (freq.includes("hf") && !freq.includes("uhf")) || freq.includes("nfc");
+
+    if (
+      isHf ||
+      name.includes("nfc") ||
+      name.includes("keychain") ||
+      name.includes("card")
+    )
+      return "NFC Keychain & Card";
+    if (
+      name.includes("ridge") ||
+      body.includes("abs") ||
+      body.includes("pcb") ||
+      body.includes("acrylic") ||
+      body.includes("plastic") ||
+      body.includes("pvc") ||
+      app.includes("metal")
+    )
+      return "ABS/PCB On-Metal";
+    if (
+      name.includes("traveler") ||
+      name.includes("rinse") ||
+      app.includes("windshield")
+    )
+      return "Specialty Tag";
+    return "Smart Label / Inlay";
   };
   // Helper to resolve tag datasheet URLs
   const getDatasheetUrl = (product) => {
     if (product.specs?.datasheet) return product.specs.datasheet;
     const name = product.name.toLowerCase();
-    
-    if (name.includes("adept 4518")) return "/assets/datasheet/TagsDatasheet/ADEPT-4518.pdf";
-    if (name.includes("adept 7618")) return "/assets/datasheet/TagsDatasheet/ADEPT-7618.pdf";
-    if (name.includes("adept 9812")) return "/assets/datasheet/TagsDatasheet/ADEPT-9812.pdf";
-    if (name.includes("adept 2212")) return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO.pdf";
-    if (name.includes("adept 2211")) return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO-E.pdf";
-    if (name.includes("adept 5433")) return "/assets/datasheet/TagsDatasheet/ADEPT-5433.pdf";
-    if (name.includes("traveler") || name.includes("traveller")) return "/assets/datasheet/TagsDatasheet/ADEPT-TRAVELLER.pdf";
-    
-    if (name.includes("pcb 5507")) return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-5507.pdf";
-    if (name.includes("pcb 1307")) return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-1307.pdf";
-    if (name.includes("ridge 15025")) return "/assets/datasheet/TagsDatasheet/Ridge-M15025.pdf";
-    if (name.includes("ridge 11025")) return "/assets/datasheet/TagsDatasheet/RIDGE-F11020.pdf";
-    
-    if (name.includes("regalia 3515") || name.includes("regalia 4515")) return "/assets/datasheet/TagsDatasheet/REGALIA-3515.pdf";
-    if (name.includes("regalia 5030") || name.includes("regalia 6525")) return "/assets/datasheet/TagsDatasheet/REGALIA-6525.pdf";
-    if (name.includes("mist")) return "/assets/datasheet/TagsDatasheet/MIST-6025.pdf";
-    
+
+    if (name.includes("adept 4518"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-4518.pdf";
+    if (name.includes("adept 7618"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-7618.pdf";
+    if (name.includes("adept 9812"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-9812.pdf";
+    if (name.includes("adept 2212"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO.pdf";
+    if (name.includes("adept 2211"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-MICRO-E.pdf";
+    if (name.includes("adept 5433"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-5433.pdf";
+    if (name.includes("traveler") || name.includes("traveller"))
+      return "/assets/datasheet/TagsDatasheet/ADEPT-TRAVELLER.pdf";
+
+    if (name.includes("pcb 5507"))
+      return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-5507.pdf";
+    if (name.includes("pcb 1307"))
+      return "/assets/datasheet/TagsDatasheet/RIDGE-PCB-1307.pdf";
+    if (name.includes("ridge 15025"))
+      return "/assets/datasheet/TagsDatasheet/Ridge-M15025.pdf";
+    if (name.includes("ridge 11025"))
+      return "/assets/datasheet/TagsDatasheet/RIDGE-F11020.pdf";
+
+    if (name.includes("regalia 3515") || name.includes("regalia 4515"))
+      return "/assets/datasheet/TagsDatasheet/REGALIA-3515.pdf";
+    if (name.includes("regalia 5030") || name.includes("regalia 6525"))
+      return "/assets/datasheet/TagsDatasheet/REGALIA-6525.pdf";
+    if (name.includes("mist"))
+      return "/assets/datasheet/TagsDatasheet/MIST-6025.pdf";
+
     return null;
   };
 
   // Filter products by tags category
   const tagsList = useMemo(() => {
-    return products.filter(p => p.category === 'rfid-tags' && p.enabled !== false);
+    return products.filter(
+      (p) => p.category === "rfid-tags" && p.enabled !== false,
+    );
   }, [products]);
 
   // Extract unique subcategory types dynamically from active tags products
   const tagTypes = useMemo(() => {
     const types = new Set();
-    tagsList.forEach(p => {
+    tagsList.forEach((p) => {
       const t = getTagType(p);
       if (t) types.add(t);
     });
@@ -116,14 +182,21 @@ const RFIDTags = () => {
   const filteredProducts = useMemo(() => {
     const list = tagsList.filter((product) => {
       // 1. Search Query filter
-      const matchesSearch = 
+      const matchesSearch =
         product.name.toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.chip || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.application || "").toLowerCase().includes(search.toLowerCase()) ||
-        (product.specs?.frequency_band || "").toLowerCase().includes(search.toLowerCase());
+        (product.specs?.chip || "")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (product.specs?.application || "")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (product.specs?.frequency_band || "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
 
       // 2. Tag Type filter
-      const matchesType = selectedType === "all" || getTagType(product) === selectedType;
+      const matchesType =
+        selectedType === "all" || getTagType(product) === selectedType;
 
       return matchesSearch && matchesType;
     });
@@ -147,7 +220,7 @@ const RFIDTags = () => {
     return (
       <div className="bg-white min-h-screen">
         <section className="py-20 px-5 lg:px-10 bg-white">
-          <div className="max-w-[1200px] mx-auto">
+          <div className="max-w-[75rem] mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-slate-900">
                 RFID Tag Products
@@ -158,9 +231,12 @@ const RFIDTags = () => {
             </div>
             <div className="space-y-8 animate-pulse">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm">
-                  <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-center">
-                    <div className="w-full h-[260px] bg-slate-100 rounded-2xl"></div>
+                <div
+                  key={n}
+                  className="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-sm"
+                >
+                  <div className="grid lg:grid-cols-[18.75rem_1fr] gap-8 items-center">
+                    <div className="w-full h-[16.25rem] bg-slate-100 rounded-2xl"></div>
                     <div className="space-y-4">
                       <div className="h-8 bg-slate-200 rounded-lg w-1/3"></div>
                       <div className="space-y-2">
@@ -184,30 +260,34 @@ const RFIDTags = () => {
     <div className="bg-white min-h-screen">
       {/* Hero Header */}
       <section className="bg-slate-900 text-white py-16 px-5 border-b border-white/5">
-        <div className="max-w-[1400px] mx-auto text-center">
-          <span className="text-brand-orange uppercase text-xs tracking-[0.25em] font-extrabold mb-3 inline-block">Tag Catalog</span>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight">RFID Tag Products</h1>
+        <div className="max-w-[87.5rem] mx-auto text-center">
+          <span className="text-brand-orange uppercase text-xs tracking-[0.25em] font-extrabold mb-3 inline-block">
+            Tag Catalog
+          </span>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight">
+            RFID Tag Products
+          </h1>
           <p className="text-slate-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">
-            UHF smart labels, rugged metal-mount tags, secure NFC keychains, cards, and custom laundry tracking chips.
+            UHF smart labels, rugged metal-mount tags, secure NFC keychains,
+            cards, and custom laundry tracking chips.
           </p>
         </div>
       </section>
 
       {/* Catalog Container */}
       <section className="py-12 px-5 lg:px-10">
-        <div className="max-w-[1400px] mx-auto">
-          
+        <div className="max-w-[87.5rem] mx-auto">
           {/* Mobile Filter Toggle Button */}
           <div className="flex md:hidden items-center justify-between gap-4 mb-6">
-            <button 
+            <button
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
               className="flex-1 flex items-center justify-center gap-2 bg-brand-blue text-white py-3 px-4 rounded-xl text-sm font-bold shadow-sm"
             >
               <Filter size={16} />
               {mobileFiltersOpen ? "Hide Filters" : "Show Filters & Search"}
             </button>
-            {(selectedType !== 'all' || search) && (
-              <button 
+            {(selectedType !== "all" || search) && (
+              <button
                 onClick={resetFilters}
                 className="bg-gray-200 text-gray-700 p-3 rounded-xl hover:bg-gray-300 transition-colors"
                 title="Reset Filters"
@@ -217,18 +297,20 @@ const RFIDTags = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 items-start">
-            
+          <div className="grid grid-cols-1 md:grid-cols-[17.5rem_1fr] gap-8 items-start">
             {/* 1. FILTER SIDEBAR */}
-            <aside className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block bg-slate-50 border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 md:sticky md:top-24 md:max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar`}>
+            <aside
+              className={`${mobileFiltersOpen ? "block" : "hidden"} md:block bg-slate-50 border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-8 md:sticky md:top-24 md:max-h-[calc(100vh-7.5rem)] overflow-y-auto custom-scrollbar`}
+            >
               <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                 <span className="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                  <SlidersHorizontal size={16} className="text-brand-orange" /> Filters
+                  <SlidersHorizontal size={16} className="text-brand-orange" />{" "}
+                  Filters
                 </span>
-                {(selectedType !== 'all' || search) && (
-                  <button 
+                {(selectedType !== "all" || search) && (
+                  <button
                     onClick={resetFilters}
-                    className="text-[10px] font-bold text-red-600 hover:text-red-800 underline transition-all"
+                    className="text-[.625rem] font-bold text-red-600 hover:text-red-800 underline transition-all"
                   >
                     Clear All
                   </button>
@@ -237,7 +319,9 @@ const RFIDTags = () => {
 
               {/* Search input in sidebar */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Search Keywords</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Search Keywords
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. Adept, NFC, ABS..."
@@ -249,7 +333,9 @@ const RFIDTags = () => {
 
               {/* Sort Order */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Sort Order</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Sort Order
+                </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -262,44 +348,52 @@ const RFIDTags = () => {
 
               {/* Tag Category Filter (Dynamic) */}
               <div className="space-y-3">
-                <label className="block text-xs font-bold text-slate-500 uppercase">Tag Form Factor</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase">
+                  Tag Form Factor
+                </label>
                 <div className="space-y-1.5">
                   <button
                     onClick={() => setSelectedType("all")}
                     className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                       selectedType === "all"
-                        ? 'bg-brand-blue text-white shadow-sm'
-                        : 'text-slate-600 hover:bg-slate-200/50'
+                        ? "bg-brand-blue text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-200/50"
                     }`}
                   >
                     <span>All Tags</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                      selectedType === "all"
-                        ? 'bg-white/20 text-white'
-                        : 'bg-slate-200 text-slate-600'
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[.5625rem] ${
+                        selectedType === "all"
+                          ? "bg-white/20 text-white"
+                          : "bg-slate-200 text-slate-600"
+                      }`}
+                    >
                       {tagsList.length}
                     </span>
                   </button>
 
                   {tagTypes.map((type) => {
-                    const count = tagsList.filter(p => getTagType(p) === type).length;
+                    const count = tagsList.filter(
+                      (p) => getTagType(p) === type,
+                    ).length;
                     return (
                       <button
                         key={type}
                         onClick={() => setSelectedType(type)}
                         className={`w-full flex items-center justify-between text-left px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
                           selectedType === type
-                            ? 'bg-brand-blue text-white shadow-sm'
-                            : 'text-slate-600 hover:bg-slate-200/50'
+                            ? "bg-brand-blue text-white shadow-sm"
+                            : "text-slate-600 hover:bg-slate-200/50"
                         }`}
                       >
                         <span>{type}s</span>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] ${
-                          selectedType === type
-                            ? 'bg-white/20 text-white'
-                            : 'bg-slate-200 text-slate-600'
-                        }`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[.5625rem] ${
+                            selectedType === type
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-200 text-slate-600"
+                          }`}
+                        >
                           {count}
                         </span>
                       </button>
@@ -311,13 +405,12 @@ const RFIDTags = () => {
 
             {/* 2. PRODUCTS GRID LIST */}
             <main className="space-y-6">
-              
               {/* Filter Results header */}
               <div className="flex justify-between items-center bg-white border border-slate-200/60 p-4 px-6 rounded-2xl shadow-sm text-xs font-semibold text-slate-500">
                 <span>Showing {filteredProducts.length} RFID tags</span>
                 <div className="flex items-center gap-4">
-                  {(selectedType !== 'all' || search) && (
-                    <span className="text-[10px] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
+                  {(selectedType !== "all" || search) && (
+                    <span className="text-[.625rem] text-brand-orange uppercase font-bold bg-brand-orange/5 px-3 py-1 rounded-full">
                       Filters Active
                     </span>
                   )}
@@ -327,8 +420,8 @@ const RFIDTags = () => {
                       type="button"
                       onClick={() => setViewMode("grid")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "grid" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "grid"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="Grid View"
@@ -339,8 +432,8 @@ const RFIDTags = () => {
                       type="button"
                       onClick={() => setViewMode("list")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "list" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "list"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="List View"
@@ -351,8 +444,8 @@ const RFIDTags = () => {
                       type="button"
                       onClick={() => setViewMode("table")}
                       className={`p-1.5 rounded-lg transition-all ${
-                        viewMode === "table" 
-                          ? "bg-white text-brand-blue shadow-sm" 
+                        viewMode === "table"
+                          ? "bg-white text-brand-blue shadow-sm"
                           : "text-slate-400 hover:text-slate-600"
                       }`}
                       title="Table View"
@@ -379,12 +472,18 @@ const RFIDTags = () => {
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
                         {filteredProducts.map((product, index) => (
-                          <tr key={product.id || index} className="hover:bg-slate-50/50 transition-colors">
+                          <tr
+                            key={product.id || index}
+                            className="hover:bg-slate-50/50 transition-colors"
+                          >
                             <td className="p-4 pl-6 font-semibold text-slate-900">
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center p-1 shrink-0">
                                   <img
-                                    src={product.image || "/assets/placeholder-product.png"}
+                                    src={
+                                      product.image ||
+                                      "/assets/placeholder-product.png"
+                                    }
                                     alt={product.name}
                                     className="max-h-full max-w-full object-contain"
                                   />
@@ -393,25 +492,33 @@ const RFIDTags = () => {
                               </div>
                             </td>
                             <td className="p-4">
-                              <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                                getTagType(product).includes('On-Metal')
-                                  ? 'bg-red-50 text-red-600 border border-red-100'
-                                  : getTagType(product).includes('NFC')
-                                  ? 'bg-purple-50 text-purple-600 border border-purple-100'
-                                  : getTagType(product).includes('Specialty')
-                                  ? 'bg-orange-50 text-orange-600 border border-orange-100'
-                                  : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'
-                              }`}>
+                              <span
+                                className={`text-[.625rem] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                                  getTagType(product).includes("On-Metal")
+                                    ? "bg-red-50 text-red-600 border border-red-100"
+                                    : getTagType(product).includes("NFC")
+                                      ? "bg-purple-50 text-purple-600 border border-purple-100"
+                                      : getTagType(product).includes(
+                                            "Specialty",
+                                          )
+                                        ? "bg-orange-50 text-orange-600 border border-orange-100"
+                                        : "bg-brand-blue/10 text-brand-blue border border-brand-blue/20"
+                                }`}
+                              >
                                 {getTagType(product)}
                               </span>
                             </td>
-                            <td className="p-4">{product.specs?.chip || 'N/A'}</td>
-                            <td className="p-4">{product.specs?.frequency_band || 'N/A'}</td>
+                            <td className="p-4">
+                              {product.specs?.chip || "N/A"}
+                            </td>
+                            <td className="p-4">
+                              {product.specs?.frequency_band || "N/A"}
+                            </td>
                             <td className="p-4 text-right pr-6">
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => setEnquiryProduct(product)}
-                                  className="px-3 py-1.5 bg-brand-green text-white font-bold rounded-lg hover:opacity-90 transition-all text-[10px]"
+                                  className="px-3 py-1.5 bg-brand-green text-white font-bold rounded-lg hover:opacity-90 transition-all text-[.625rem]"
                                 >
                                   Enquire
                                 </button>
@@ -460,9 +567,12 @@ const RFIDTags = () => {
                       >
                         <div>
                           {/* Product Image */}
-                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[200px] items-center border border-slate-100 mb-4">
+                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[12.5rem] items-center border border-slate-100 mb-4">
                             <img
-                              src={product.image || "/assets/placeholder-product.png"}
+                              src={
+                                product.image ||
+                                "/assets/placeholder-product.png"
+                              }
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -470,34 +580,45 @@ const RFIDTags = () => {
 
                           {/* Product Details */}
                           <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <span className={`text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider ${
-                              getTagType(product).includes('On-Metal')
-                                ? 'bg-red-50 text-red-600 border border-red-100'
-                                : getTagType(product).includes('NFC')
-                                ? 'bg-purple-50 text-purple-600 border border-purple-100'
-                                : getTagType(product).includes('Specialty')
-                                ? 'bg-orange-50 text-orange-600 border border-orange-100'
-                                : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'
-                            }`}>
+                            <span
+                              className={`text-[.5625rem] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider ${
+                                getTagType(product).includes("On-Metal")
+                                  ? "bg-red-50 text-red-600 border border-red-100"
+                                  : getTagType(product).includes("NFC")
+                                    ? "bg-purple-50 text-purple-600 border border-purple-100"
+                                    : getTagType(product).includes("Specialty")
+                                      ? "bg-orange-50 text-orange-600 border border-orange-100"
+                                      : "bg-brand-blue/10 text-brand-blue border border-brand-blue/20"
+                              }`}
+                            >
                               {getTagType(product)}
                             </span>
                             {product.specs?.frequency_band && (
-                              <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full">
+                              <span className="text-[.5625rem] font-bold bg-slate-100 text-slate-500 px-2.5 py-0.5 rounded-full">
                                 {product.specs.frequency_band}
                               </span>
                             )}
                           </div>
 
-                          <h3 className="text-lg font-extrabold text-slate-900 mb-3 tracking-tight truncate" title={product.name}>
+                          <h3
+                            className="text-lg font-extrabold text-slate-900 mb-3 tracking-tight truncate"
+                            title={product.name}
+                          >
                             {product.name}
                           </h3>
 
                           <div className="space-y-1 text-xs">
                             {Object.entries(product.specs || {})
-                              .filter(([key]) => key !== "type" && key !== "datasheet")
+                              .filter(
+                                ([key]) =>
+                                  key !== "type" && key !== "datasheet",
+                              )
                               .slice(0, 4)
                               .map(([key, value]) => (
-                                <p key={key} className="text-slate-600 truncate">
+                                <p
+                                  key={key}
+                                  className="text-slate-600 truncate"
+                                >
                                   <span className="font-semibold text-slate-900">
                                     {labels[key] ||
                                       key
@@ -560,11 +681,14 @@ const RFIDTags = () => {
                         key={product.id || index}
                         className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-slate-300 transition-all"
                       >
-                        <div className="grid lg:grid-cols-[280px_1fr] gap-8 items-center">
+                        <div className="grid lg:grid-cols-[17.5rem_1fr] gap-8 items-center">
                           {/* Product Image */}
-                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
+                          <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[16.25rem] items-center border border-slate-100">
                             <img
-                              src={product.image || "/assets/placeholder-product.png"}
+                              src={
+                                product.image ||
+                                "/assets/placeholder-product.png"
+                              }
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -573,19 +697,23 @@ const RFIDTags = () => {
                           {/* Product Details */}
                           <div>
                             <div className="flex flex-wrap items-center gap-2 mb-3">
-                              <span className={`text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider ${
-                                getTagType(product).includes('On-Metal')
-                                  ? 'bg-red-50 text-red-600 border border-red-100'
-                                  : getTagType(product).includes('NFC')
-                                  ? 'bg-purple-50 text-purple-600 border border-purple-100'
-                                  : getTagType(product).includes('Specialty')
-                                  ? 'bg-orange-50 text-orange-600 border border-orange-100'
-                                  : 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20'
-                              }`}>
+                              <span
+                                className={`text-[.625rem] font-extrabold uppercase px-3 py-1 rounded-full tracking-wider ${
+                                  getTagType(product).includes("On-Metal")
+                                    ? "bg-red-50 text-red-600 border border-red-100"
+                                    : getTagType(product).includes("NFC")
+                                      ? "bg-purple-50 text-purple-600 border border-purple-100"
+                                      : getTagType(product).includes(
+                                            "Specialty",
+                                          )
+                                        ? "bg-orange-50 text-orange-600 border border-orange-100"
+                                        : "bg-brand-blue/10 text-brand-blue border border-brand-blue/20"
+                                }`}
+                              >
                                 {getTagType(product)}
                               </span>
                               {product.specs?.frequency_band && (
-                                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                                <span className="text-[.625rem] font-bold bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
                                   {product.specs.frequency_band}
                                 </span>
                               )}
@@ -597,7 +725,10 @@ const RFIDTags = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                               {Object.entries(product.specs || {})
-                                .filter(([key]) => key !== "type" && key !== "datasheet")
+                                .filter(
+                                  ([key]) =>
+                                    key !== "type" && key !== "datasheet",
+                                )
                                 .map(([key, value]) => (
                                   <p key={key} className="text-slate-700">
                                     <span className="font-semibold text-slate-950">
@@ -652,12 +783,12 @@ const RFIDTags = () => {
 
       {/* CTA Section - Unique Glassmorphism Design */}
       <section className="pt-12 pb-24 px-5 lg:px-10">
-        <div className="max-w-[1200px] mx-auto relative">
-          <div className="absolute inset-0 bg-brand-blue rounded-[60px] transform -rotate-1 skew-y-1"></div>
-          <div className="relative bg-[#0f172a] rounded-[60px] p-12 md:p-24 overflow-hidden shadow-2xl border border-white/10">
+        <div className="max-w-[75rem] mx-auto relative">
+          <div className="absolute inset-0 bg-brand-blue rounded-[3.75rem] transform -rotate-1 skew-y-1"></div>
+          <div className="relative bg-[#0f172a] rounded-[3.75rem] p-12 md:p-24 overflow-hidden shadow-2xl border border-white/10">
             {/* Abstract Background Design */}
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px]"></div>
-            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-green/20 rounded-full blur-[80px]"></div>
+            <div className="absolute top-0 right-0 w-[25rem] h-[25rem] bg-brand-orange/20 rounded-full blur-[6.25rem]"></div>
+            <div className="absolute bottom-0 left-0 w-[18.75rem] h-[18.75rem] bg-brand-green/20 rounded-full blur-[5rem]"></div>
 
             <div className="relative z-10 text-center max-w-3xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight">

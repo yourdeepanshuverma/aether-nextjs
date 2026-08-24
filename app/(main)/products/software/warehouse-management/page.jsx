@@ -1,4 +1,3 @@
-"use client";
 import { BarChart, Box, ClipboardCheck, Layers, Zap } from "lucide-react";
 import Link from "next/link";
 

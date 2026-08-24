@@ -1,4 +1,3 @@
-"use client";
 import { ArrowRight, Globe, Satellite, Shield, Zap } from "lucide-react";
 import Link from "next/link";
 

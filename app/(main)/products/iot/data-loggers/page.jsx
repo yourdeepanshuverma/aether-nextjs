@@ -1,4 +1,3 @@
-"use client";
 import { Clock, LineChart, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 

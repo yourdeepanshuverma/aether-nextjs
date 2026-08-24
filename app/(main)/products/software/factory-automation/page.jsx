@@ -1,4 +1,3 @@
-"use client";
 import { BarChart, Cog, Factory, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 

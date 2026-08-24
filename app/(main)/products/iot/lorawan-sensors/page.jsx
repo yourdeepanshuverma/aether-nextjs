@@ -1,4 +1,3 @@
-"use client";
 import { Cpu, Network, Radio, Signal, Wifi } from "lucide-react";
 import Link from "next/link";
 

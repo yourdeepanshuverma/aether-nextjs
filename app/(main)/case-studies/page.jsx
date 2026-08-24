@@ -1,4 +1,3 @@
-"use client";
 import { BarChart3, Globe, Shield, Zap } from "lucide-react";
 import Link from "next/link";
 

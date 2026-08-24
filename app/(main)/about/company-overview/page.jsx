@@ -1,6 +1,14 @@
 "use client";
-import { Target, Award, Shield, Cpu, Users, Zap } from "lucide-react";
+import { Award, Cpu, Shield, Target, Users, Zap } from "lucide-react";
 import Link from "next/link";
+
+export const metadata = {
+  title: "About Aether RFID | Leading RFID & IoT Company in India",
+  description:
+    "Aether RFID Technologies Pvt Ltd is a top RFID company in India, delivering cost-effective RFID tags, readers & IoT solutions across industries.",
+  keywords:
+    "top RFID companies in India, best RFID solution provider India, RFID technology company India",
+};
 
 const CompanyOverview = () => {
   const values = [
@@ -168,7 +176,6 @@ const CompanyOverview = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -191,7 +198,6 @@ const CompanyOverview = () => {
               Our core values are the foundation of everything we build, guiding
               our team to deliver excellence in every project.
             </p>
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -229,7 +235,8 @@ const CompanyOverview = () => {
             <div className="lg:w-1/3 flex justify-center lg:justify-end">
               <Link
                 href="/contact"
-                className="bg-white text-brand-blue px-12 py-6 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl">
+                className="bg-white text-brand-blue px-12 py-6 rounded-2xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl"
+              >
                 Get Started Today
               </Link>
             </div>

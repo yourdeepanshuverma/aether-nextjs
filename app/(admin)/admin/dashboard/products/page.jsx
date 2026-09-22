@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { api } from '@/utils/api';
+import { getSafeMediaUrl } from '@/utils/media';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers, Eye, EyeOff } from 'lucide-react';
 
 export default function ProductsManager() {
@@ -323,7 +324,7 @@ export default function ProductsManager() {
             <div>
               <div className="h-44 w-full rounded-2xl overflow-hidden mb-4 bg-gray-50 flex items-center justify-center p-4">
                 <img 
-                  src={product.image || "/assets/placeholder-product.png"} 
+                  src={getSafeMediaUrl(product.image, "/assets/placeholder-product.png")} 
                   alt={product.name} 
                   className="max-h-full max-w-full object-contain" 
                 />

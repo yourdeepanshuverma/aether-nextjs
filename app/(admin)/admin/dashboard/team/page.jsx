@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
 import { api } from '@/utils/api';
+import { getSafeMediaUrl } from '@/utils/media';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function TeamManager() {
@@ -167,7 +168,7 @@ export default function TeamManager() {
 
               <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-gray-100 shadow-inner bg-gray-50 mt-2 flex items-center justify-center">
                 {member.image ? (
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                  <img src={getSafeMediaUrl(member.image)} alt={member.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-brand-blue/10 text-brand-blue font-bold text-2xl uppercase">
                     {member.name ? member.name.charAt(0) : 'U'}

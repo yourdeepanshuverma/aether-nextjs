@@ -1,5 +1,6 @@
 "use client";
 import { useContent } from "@/context/ContentContext";
+import { getSafeMediaUrl } from "@/utils/media";
 import {
   Download,
   Filter,
@@ -114,7 +115,7 @@ const RFIDTags = () => {
   };
   // Helper to resolve tag datasheet URLs
   const getDatasheetUrl = (product) => {
-    if (product.specs?.datasheet) return product.specs.datasheet;
+    if (product.specs?.datasheet) return getSafeMediaUrl(product.specs.datasheet, '');
     const name = product.name.toLowerCase();
 
     if (name.includes("adept 4518"))
@@ -469,10 +470,10 @@ const RFIDTags = () => {
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center p-1 shrink-0">
                                   <img
-                                    src={
-                                      product.image ||
+                                    src={getSafeMediaUrl(
+                                      product.image,
                                       "/assets/placeholder-product.png"
-                                    }
+                                    )}
                                     alt={product.name}
                                     className="max-h-full max-w-full object-contain"
                                   />
@@ -558,10 +559,10 @@ const RFIDTags = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[12.5rem] items-center border border-slate-100 mb-4">
                             <img
-                              src={
-                                product.image ||
+                              src={getSafeMediaUrl(
+                                product.image,
                                 "/assets/placeholder-product.png"
-                              }
+                              )}
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -674,10 +675,10 @@ const RFIDTags = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[16.25rem] items-center border border-slate-100">
                             <img
-                              src={
-                                product.image ||
+                              src={getSafeMediaUrl(
+                                product.image,
                                 "/assets/placeholder-product.png"
-                              }
+                              )}
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />

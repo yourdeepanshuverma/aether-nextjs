@@ -1,6 +1,7 @@
 "use client";
 
 import { useContent } from "@/context/ContentContext";
+import { getSafeMediaUrl } from "@/utils/media";
 import { Link as LinkIcon, Mail } from "lucide-react";
 import { useEffect } from "react";
 
@@ -144,7 +145,7 @@ const Team = () => {
               <div key={idx} className="group relative">
                 <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-8 shadow-xl transition-all duration-500 group-hover:-translate-y-4">
                   <img
-                    src={member.image}
+                    src={getSafeMediaUrl(member.image, "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80")}
                     alt={member.name}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
                   />

@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { Calendar, User, Tag, ArrowLeft, Share2, MessageSquare } from "lucide-react";
 import { useEffect } from "react";
 import { useContent } from "@/context/ContentContext";
+import { getSafeMediaUrl } from "@/utils/media";
 
 const Facebook = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,7 +86,7 @@ const BlogDetails = () => {
     return <div className="text-center py-20">Loading blog post...</div>;
   }
 
-    if (loading) {
+  if (loading) {
     return (
       <div className="bg-white min-h-screen animate-pulse">
         {/* Blog Hero Header Skeleton */}
@@ -138,7 +139,7 @@ const BlogDetails = () => {
       <section className="relative h-[50vh] min-h-[400px] w-full flex items-end">
         <div className="absolute inset-0">
           <img 
-            src={blog.image}
+            src={getSafeMediaUrl(blog.image, "/assets/blogs/close-up-scanning-box.jpg")}
             alt={blog.title} 
             className="w-full h-full object-cover"
           />
@@ -238,7 +239,11 @@ const BlogDetails = () => {
                   {relatedPosts.map(post => (
                     <Link key={post._id || post.id} href={`/blog/${post._id || post.id}`} className="flex gap-4 group">
                       <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0">
-                        <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img 
+                          src={getSafeMediaUrl(post.image, "/assets/blogs/close-up-scanning-box.jpg")} 
+                          alt={post.title} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        />
                       </div>
                       <div>
                         <span className="text-xs font-bold text-brand-blue uppercase mb-1 block">{post.category}</span>
@@ -285,4 +290,3 @@ const BlogDetails = () => {
 };
 
 export default BlogDetails;
-

@@ -1,5 +1,6 @@
 "use client";
 import { useContent } from "@/context/ContentContext";
+import { getSafeMediaUrl } from "@/utils/media";
 import {
   Filter,
   LayoutGrid,
@@ -490,10 +491,10 @@ const RFIDHardware = () => {
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-center p-1 shrink-0">
                                   <img
-                                    src={
-                                      product.image ||
+                                    src={getSafeMediaUrl(
+                                      product.image,
                                       "/assets/placeholder-product.png"
-                                    }
+                                    )}
                                     alt={product.name}
                                     className="max-h-full max-w-full object-contain"
                                   />
@@ -553,10 +554,10 @@ const RFIDHardware = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[200px] items-center border border-slate-100 mb-4">
                             <img
-                              src={
-                                product.image ||
+                              src={getSafeMediaUrl(
+                                product.image,
                                 "/assets/placeholder-product.png"
-                              }
+                              )}
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />
@@ -644,10 +645,10 @@ const RFIDHardware = () => {
                           {/* Product Image */}
                           <div className="flex justify-center bg-slate-50/50 rounded-2xl p-4 h-[260px] items-center border border-slate-100">
                             <img
-                              src={
-                                product.image ||
+                              src={getSafeMediaUrl(
+                                product.image,
                                 "/assets/placeholder-product.png"
-                              }
+                              )}
                               alt={product.name}
                               className="max-h-full max-w-full object-contain"
                             />

@@ -10,6 +10,18 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'aether-admin-secure-token-2026';
 // Helper to check if a string is a valid UUID
 const isUuid = (str) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
+// Helper to sanitize Supabase storage URLs to safe relative URLs
+const sanitizeMediaUrl = (url) => {
+  if (!url || typeof url !== 'string') return url;
+  if (url.includes('/storage/v1/object/public/')) {
+    return url.substring(url.indexOf('/storage/v1/object/public/'));
+  }
+  if (url.includes('/storage/')) {
+    return url.substring(url.indexOf('/storage/'));
+  }
+  return url;
+};
+
 // Helper to verify admin authentication
 function isAuthenticated(req) {
   const authHeader = req.headers.get('Authorization');
@@ -119,12 +131,12 @@ export async function GET(req, { params }) {
         }
         const { data, error } = await supabase.from('blogs').select('*').eq('id', idOrKey).single();
         if (error) return NextResponse.json({ message: 'Blog not found' }, { status: 404 });
-        return NextResponse.json({ ...data, _id: data.id });
+        return NextResponse.json({ ...data, _id: data.id, image: sanitizeMediaUrl(data.image) });
       } else {
         // Fetch all blogs
         const { data, error } = await supabase.from('blogs').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        const formatted = data.map(b => ({ ...b, _id: b.id }));
+        const formatted = data.map(b => ({ ...b, _id: b.id, image: sanitizeMediaUrl(b.image) }));
         return NextResponse.json(formatted);
       }
     }
@@ -143,7 +155,7 @@ export async function GET(req, { params }) {
         if (typeof isEnabled === 'undefined') {
           isEnabled = true;
         }
-        return { ...t, _id: t.id, enabled: !!isEnabled };
+        return { ...t, _id: t.id, image: sanitizeMediaUrl(t.image), enabled: !!isEnabled };
       });
       return NextResponse.json(formatted);
     }
@@ -161,6 +173,20 @@ export async function GET(req, { params }) {
 
     // 7. Products (Public read)
     if (route === 'products') {
+      const formatProduct = (p, isEnabled) => {
+        const specs = p.specs ? { ...p.specs } : {};
+        if (specs.datasheet) {
+          specs.datasheet = sanitizeMediaUrl(specs.datasheet);
+        }
+        return {
+          ...p,
+          _id: p.id,
+          image: sanitizeMediaUrl(p.image),
+          specs,
+          enabled: !!isEnabled
+        };
+      };
+
       if (idOrKey) {
         if (!isUuid(idOrKey)) {
           return NextResponse.json({ message: 'Product not found' }, { status: 404 });
@@ -171,7 +197,7 @@ export async function GET(req, { params }) {
         let isEnabled = data.enabled;
         if (typeof visMap[data.id] !== 'undefined') isEnabled = visMap[data.id];
         if (typeof isEnabled === 'undefined') isEnabled = true;
-        return NextResponse.json({ ...data, _id: data.id, enabled: !!isEnabled });
+        return NextResponse.json(formatProduct(data, isEnabled));
       } else {
         const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
         if (error) throw error;
@@ -180,7 +206,7 @@ export async function GET(req, { params }) {
           let isEnabled = p.enabled;
           if (typeof visMap[p.id] !== 'undefined') isEnabled = visMap[p.id];
           if (typeof isEnabled === 'undefined') isEnabled = true;
-          return { ...p, _id: p.id, enabled: !!isEnabled };
+          return formatProduct(p, isEnabled);
         });
         return NextResponse.json(formatted);
       }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useContent } from "@/context/ContentContext";
+import { getSafeMediaUrl } from "@/utils/media";
 import { ArrowRight, Calendar, Tag, User } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -167,7 +168,7 @@ const Blogs = () => {
           <div className="group relative overflow-hidden rounded-3xl bg-gray-50 border border-gray-100 flex flex-col lg:flex-row gap-0 lg:gap-10 hover:shadow-2xl transition-all duration-500">
             <div className="lg:w-1/2 overflow-hidden h-[300px] lg:h-[450px]">
               <img
-                src={featuredBlog.image}
+                src={getSafeMediaUrl(featuredBlog.image, "/assets/blogs/close-up-scanning-box.jpg")}
                 alt={featuredBlog.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -243,7 +244,7 @@ const Blogs = () => {
               >
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={blog.image}
+                    src={getSafeMediaUrl(blog.image, "/assets/blogs/close-up-scanning-box.jpg")}
                     alt={blog.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />

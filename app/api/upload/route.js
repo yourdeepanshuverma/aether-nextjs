@@ -81,9 +81,13 @@ export async function POST(req) {
       .from(bucketName)
       .getPublicUrl(filePath);
 
+    // Provide relative storage URL to ensure compatibility with HTTPS and custom domains
+    const safeUrl = `/storage/v1/object/public/${bucketName}/${filePath}`;
+
     return NextResponse.json({
       success: true,
-      url: publicUrlData.publicUrl,
+      url: safeUrl,
+      fullUrl: publicUrlData?.publicUrl || safeUrl,
       path: filePath,
       fileName: originalName,
       size: file.size,

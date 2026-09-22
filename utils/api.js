@@ -149,5 +149,30 @@ export const api = {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify({ testEmail })
-    })
+    }),
+
+  // File / Image Upload to Supabase Storage
+  uploadFile: async (file, folder = 'uploads', bucket = 'images', token) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    formData.append('bucket', bucket);
+
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to upload file');
+    }
+    return data;
+  }
 };

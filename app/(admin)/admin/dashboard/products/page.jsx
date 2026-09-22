@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
-import { supabase } from '@/utils/supabase';
+import { api } from '@/utils/api';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Save, Layers, Eye, EyeOff } from 'lucide-react';
 
 export default function ProductsManager() {
@@ -27,7 +27,8 @@ export default function ProductsManager() {
     editProduct, 
     removeProduct,
     loadProducts,
-    refreshData 
+    refreshData,
+    adminToken
   } = useContent();
 
   useEffect(() => {
@@ -64,26 +65,14 @@ export default function ProductsManager() {
 
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      const { data: publicUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      callback(publicUrlData.publicUrl);
+      const res = await api.uploadFile(file, 'products', 'images', adminToken);
+      if (res?.url) {
+        callback(res.url);
+        showStatus("Product image uploaded successfully!");
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
+      showStatus('', 'Failed to upload image: ' + error.message);
       alert('Failed to upload image: ' + error.message);
     } finally {
       setUploading(false);
@@ -101,27 +90,14 @@ export default function ProductsManager() {
 
     try {
       setPdfUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `datasheets/${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      const { data: publicUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      callback(publicUrlData.publicUrl);
-      showStatus("Datasheet PDF uploaded successfully!");
+      const res = await api.uploadFile(file, 'datasheets', 'images', adminToken);
+      if (res?.url) {
+        callback(res.url);
+        showStatus("Datasheet PDF uploaded successfully!");
+      }
     } catch (error) {
       console.error('Error uploading PDF:', error);
+      showStatus('', 'Failed to upload PDF: ' + error.message);
       alert('Failed to upload PDF: ' + error.message);
     } finally {
       setPdfUploading(false);

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
-import { supabase } from '@/utils/supabase';
+import { api } from '@/utils/api';
 import { Save, CheckCircle, AlertCircle, Upload, Video, Loader2 } from 'lucide-react';
 
 export default function PageContentEditor() {
@@ -12,7 +12,8 @@ export default function PageContentEditor() {
     getContent, 
     updateSectionContent,
     refreshData,
-    siteContent
+    siteContent,
+    adminToken
   } = useContent();
 
   const showStatus = (success = '', error = '') => {
@@ -26,28 +27,14 @@ export default function PageContentEditor() {
 
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `${folder}/${fileName}`;
-
-      // Upload file to Supabase storage bucket 'images' (or media storage)
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      // Retrieve public URL
-      const { data: publicUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      callback(publicUrlData.publicUrl);
+      const res = await api.uploadFile(file, folder || 'uploads', 'images', adminToken);
+      if (res?.url) {
+        callback(res.url);
+        showStatus("Media file uploaded successfully!");
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
+      showStatus('', 'Failed to upload file: ' + error.message);
       alert('Failed to upload file: ' + error.message);
     } finally {
       setUploading(false);

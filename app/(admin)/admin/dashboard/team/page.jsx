@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { useContent } from '@/context/ContentContext';
-import { supabase } from '@/utils/supabase';
+import { api } from '@/utils/api';
 import { Plus, Edit, Trash2, X, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function TeamManager() {
@@ -18,7 +18,8 @@ export default function TeamManager() {
     editTeamMember, 
     removeTeamMember,
     loadTeam,
-    refreshData 
+    refreshData,
+    adminToken
   } = useContent();
 
   useEffect(() => {
@@ -36,28 +37,14 @@ export default function TeamManager() {
 
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `${folder}/${fileName}`;
-
-      // Upload the file to Supabase storage bucket 'images'
-      const { data, error } = await supabase.storage
-        .from('images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (error) throw error;
-
-      // Retrieve the public URL
-      const { data: publicUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      callback(publicUrlData.publicUrl);
+      const res = await api.uploadFile(file, folder || 'team', 'images', adminToken);
+      if (res?.url) {
+        callback(res.url);
+        showStatus("Team member image uploaded successfully!");
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
+      showStatus('', 'Failed to upload image: ' + error.message);
       alert('Failed to upload image: ' + error.message);
     } finally {
       setUploading(false);

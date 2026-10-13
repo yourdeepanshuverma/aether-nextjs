@@ -16,7 +16,7 @@ const AboutUs = () => {
       visionDesc: "To be the catalyst for a smarter, more connected global infrastructure.",
       buttonText: "Learn More About Us",
       buttonLink: "/about/company-overview",
-      imageUrl: "/assets/about-2.webp"
+      imageUrl: "/assets/about-2.jpg"
     }
   });
 

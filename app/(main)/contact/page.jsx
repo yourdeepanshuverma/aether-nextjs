@@ -2,6 +2,7 @@
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useContent } from "@/context/ContentContext";
+import { WhatsAppIcon } from "@/components/FloatingContactWidget";
 
 const Contact = () => {
   const { submitContactForm } = useContent();
@@ -103,11 +104,58 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* 2. Contact Form Section */}
+      {/* 2. Direct Channels & Contact Form Section */}
       <section className="py-20 max-w-[1400px] mx-auto px-5 lg:px-10">
         <div className="max-w-4xl mx-auto">
+          {/* Quick Direct Connect Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+            <a
+              href="https://wa.me/917042436155?text=Hello%20Aether%20RFID%2C%20I%20would%20like%20to%20enquire%20about%20your%20products%20and%20solutions."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-6 rounded-3xl bg-emerald-50/70 hover:bg-emerald-50 border border-emerald-200/80 flex items-center gap-4 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-400 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-[#25D366] text-white flex items-center justify-center shadow-md shadow-emerald-500/30 group-hover:scale-110 transition-transform shrink-0">
+                <WhatsAppIcon size={24} />
+              </div>
+              <div>
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">WhatsApp Chat</p>
+                <p className="text-sm font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">+91-7042436155</p>
+                <p className="text-xs text-emerald-600 mt-0.5 font-medium">Instant Enquiry & Chat</p>
+              </div>
+            </a>
+
+            <a
+              href="tel:+917042436155"
+              className="p-6 rounded-3xl bg-blue-50/70 hover:bg-blue-50 border border-blue-200/80 flex items-center gap-4 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-400 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-md shadow-blue-500/30 group-hover:scale-110 transition-transform shrink-0">
+                <Phone size={22} />
+              </div>
+              <div>
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-blue-800">Direct Call</p>
+                <p className="text-sm font-bold text-gray-900 group-hover:text-brand-blue transition-colors">+91-7042436155</p>
+                <p className="text-xs text-blue-600 mt-0.5 font-medium">Speak with an Expert</p>
+              </div>
+            </a>
+
+            <a
+              href="mailto:info@aetherrfid.com"
+              className="p-6 rounded-3xl bg-amber-50/70 hover:bg-amber-50 border border-amber-200/80 flex items-center gap-4 hover:shadow-xl hover:shadow-amber-500/10 hover:border-amber-400 transition-all group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-brand-orange text-white flex items-center justify-center shadow-md shadow-amber-500/30 group-hover:scale-110 transition-transform shrink-0">
+                <Mail size={22} />
+              </div>
+              <div>
+                <p className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">Email Us</p>
+                <p className="text-sm font-bold text-gray-900 group-hover:text-brand-orange transition-colors">info@aetherrfid.com</p>
+                <p className="text-xs text-amber-600 mt-0.5 font-medium">Official Quotations</p>
+              </div>
+            </a>
+          </div>
+
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Send Us a Message</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Send Us a Message</h2>
             <div className="flex items-center justify-center gap-4">
               <div className="h-[2px] w-20 bg-gray-200"></div>
               <div className="w-3 h-3 rounded-full bg-brand-green"></div>

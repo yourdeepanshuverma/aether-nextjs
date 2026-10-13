@@ -59,7 +59,7 @@ export default function PageContentEditor() {
       visionTitle: "Our Vision",
       visionDesc: "To build a seamlessly connected infrastructure...",
       buttonText: "Learn More About Us",
-      imageUrl: "/assets/about-2.webp"
+      imageUrl: "/assets/about-2.jpg"
     }
   });
 

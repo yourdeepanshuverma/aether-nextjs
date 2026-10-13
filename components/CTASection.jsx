@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Send, MapPin, Mail, Phone, CheckCircle, AlertCircle } from "lucide-react";
 import { useContent } from "@/context/ContentContext";
+import { WhatsAppIcon } from "@/components/FloatingContactWidget";
 
 const CTASection = () => {
   const { submitContactForm } = useContent();
@@ -93,25 +94,45 @@ const CTASection = () => {
                 Transform your business with our cutting-edge IoT and RFID solutions. Our experts are ready to help you scale.
               </p>
 
-              <div className="space-y-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+              <div className="space-y-6">
+                <a 
+                  href="https://wa.me/917042436155?text=Hello%20Aether%20RFID%2C%20I%20would%20like%20to%20enquire%20about%20your%20products%20and%20solutions."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 group cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-[#25D366]/20 group-hover:bg-[#25D366] text-[#25D366] group-hover:text-white flex items-center justify-center backdrop-blur-md transition-all">
+                    <WhatsAppIcon size={22} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-white/60">WhatsApp Enquiry</p>
+                    <p className="font-semibold group-hover:text-[#25D366] transition-colors">+91 7042436155</p>
+                  </div>
+                </a>
+                <a 
+                  href="mailto:info@aetherrfid.com"
+                  className="flex items-center gap-4 group cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 group-hover:bg-white/20 flex items-center justify-center backdrop-blur-md transition-all">
                     <Mail size={20} />
                   </div>
                   <div>
                     <p className="text-sm text-white/60">Email us at</p>
-                    <p className="font-semibold">info@aetherrfid.com</p>
+                    <p className="font-semibold group-hover:text-white transition-colors">info@aetherrfid.com</p>
                   </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+                </a>
+                <a 
+                  href="tel:+917042436155"
+                  className="flex items-center gap-4 group cursor-pointer"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 group-hover:bg-white/20 flex items-center justify-center backdrop-blur-md transition-all">
                     <Phone size={20} />
                   </div>
                   <div>
                     <p className="text-sm text-white/60">Call us</p>
-                    <p className="font-semibold">+91 7042436155</p>
+                    <p className="font-semibold group-hover:text-white transition-colors">+91 7042436155</p>
                   </div>
-                </div>
+                </a>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
                     <MapPin size={20} />

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
+import { WhatsAppIcon } from "@/components/FloatingContactWidget";
 
 const LinkedInIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -116,16 +117,25 @@ const Footer = () => {
               AETHER RFID Technologies Private Limited
             </p>
 
-            {/* Social Icons */}
+            {/* Social & Messaging Icons */}
             <div className="flex gap-4">
-              <a href={content.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm" title="LinkedIn">
                 <LinkedInIcon size={18} />
               </a>
-              <a href={content.twitter || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.twitter || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm" title="Twitter / X">
                 <TwitterIcon size={18} />
               </a>
-              <a href={content.youtube || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm">
+              <a href={content.youtube || "#"} target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-brand-green hover:text-white transition-all shadow-sm" title="YouTube">
                 <YoutubeIcon size={18} />
+              </a>
+              <a 
+                href={content.whatsapp || "https://wa.me/917042436155?text=Hello%20Aether%20RFID%2C%20I%20would%20like%20to%20enquire%20about%20your%20products%20and%20solutions."} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
+                title="Chat on WhatsApp"
+              >
+                <WhatsAppIcon size={18} />
               </a>
             </div>
           </div>
@@ -158,9 +168,24 @@ const Footer = () => {
               <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                 {addr.address}
               </p>
-              <p className="text-sm text-gray-700">
-                <span className="font-bold">Contact:</span> {addr.contact}
-              </p>
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-sm">
+                <a
+                  href={`tel:${addr.contact.replace(/\s+/g, "")}`}
+                  className="text-gray-700 hover:text-brand-blue transition-colors"
+                >
+                  <span className="font-bold">Contact:</span> {addr.contact}
+                </a>
+                <a
+                  href={`https://wa.me/${addr.contact.replace(/\D/g, "")}?text=${encodeURIComponent("Hello Aether RFID, I would like to enquire about your solutions.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-full transition-colors ml-1"
+                  title="Enquire on WhatsApp"
+                >
+                  <WhatsAppIcon size={12} />
+                  <span>WhatsApp</span>
+                </a>
+              </div>
             </div>
           ))}
         </div>

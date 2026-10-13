@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, ChevronRight, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useContent } from "@/context/ContentContext";
+import { WhatsAppIcon } from "@/components/FloatingContactWidget";
 
 const Header = () => {
   const { getContent } = useContent();
@@ -112,7 +113,7 @@ const Header = () => {
       {/* Top Info & Accessibility Bar */}
       <div className="bg-[#0f172a] text-slate-300 border-b border-white/10 select-none">
         <div className="max-w-[1400px] mx-auto px-5 lg:px-10 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs font-semibold">
-          {/* Company Mail & Mobile */}
+          {/* Company Mail, Mobile & WhatsApp */}
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <a href="mailto:info@aetherrfid.com" className="flex items-center gap-2 hover:text-[#ffffff] transition-colors text-[11px] sm:text-xs">
               <Mail size={12} className="text-brand-orange" />
@@ -121,6 +122,16 @@ const Header = () => {
             <a href="tel:+917042436155" className="flex items-center gap-2 hover:text-[#ffffff] transition-colors text-[11px] sm:text-xs">
               <Phone size={12} className="text-brand-orange" />
               <span>+91-7042436155</span>
+            </a>
+            <a
+              href="https://wa.me/917042436155?text=Hi%20Aether%20RFID%2C%20I%20have%20an%20enquiry%20regarding%20your%20products%20and%20services."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-[#25D366] transition-colors text-[11px] sm:text-xs"
+              title="Chat & Enquire on WhatsApp"
+            >
+              <WhatsAppIcon size={13} className="text-[#25D366]" />
+              <span>WhatsApp</span>
             </a>
           </div>
 
@@ -338,13 +349,25 @@ const Header = () => {
               </div>
             ))}
 
-            <Link 
-              href="/contact" 
-              className="bg-brand-blue border-2 border-brand-blue text-white font-semibold px-6 py-3 rounded-full mt-2 hover:bg-[#ffffff] hover:text-brand-blue lg:hover:scale-105 transition duration-300 text-center"
-              onClick={() => setMobileMenu(false)}
-            >
-              Contact Us
-            </Link>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <Link 
+                href="/contact" 
+                className="bg-brand-blue border-2 border-brand-blue text-white font-semibold px-4 py-3 rounded-full hover:bg-[#ffffff] hover:text-brand-blue transition duration-300 text-center text-sm"
+                onClick={() => setMobileMenu(false)}
+              >
+                Contact Us
+              </Link>
+              <a
+                href="https://wa.me/917042436155?text=Hi%20Aether%20RFID%2C%20I%20have%20an%20enquiry%20regarding%20your%20products%20and%20services."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#25D366] border-2 border-[#25D366] text-white font-semibold px-4 py-3 rounded-full hover:bg-emerald-600 transition duration-300 flex items-center justify-center gap-2 text-sm"
+                onClick={() => setMobileMenu(false)}
+              >
+                <WhatsAppIcon size={16} />
+                <span>WhatsApp</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

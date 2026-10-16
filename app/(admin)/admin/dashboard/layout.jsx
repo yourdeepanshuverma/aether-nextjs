@@ -13,7 +13,8 @@ import {
   Package,
   Settings,
   FileCode,
-  Key
+  Key,
+  Handshake
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -64,6 +65,7 @@ export default function DashboardLayout({ children }) {
     { name: 'Manage Products', path: '/admin/dashboard/products', icon: Package },
     { name: 'Manage Blogs', path: '/admin/dashboard/blogs', icon: FileText },
     { name: 'Manage Team', path: '/admin/dashboard/team', icon: Users },
+    { name: 'Manage Alliances', path: '/admin/dashboard/alliances', icon: Handshake },
     { name: 'Manage Footer', path: '/admin/dashboard/footer', icon: Settings },
     { name: 'Manage Sitemap', path: '/admin/dashboard/sitemap', icon: FileCode },
     { name: 'SMTP Settings', path: '/admin/dashboard/smtp', icon: Key },

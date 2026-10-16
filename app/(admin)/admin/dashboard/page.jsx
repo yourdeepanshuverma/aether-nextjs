@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useContent } from '@/context/ContentContext';
 import { api } from '@/utils/api';
-import { Save, CheckCircle, AlertCircle, Upload, Video, Loader2 } from 'lucide-react';
+import { Save, CheckCircle, AlertCircle, Upload, Video, Loader2, Handshake, ArrowRight } from 'lucide-react';
 
 export default function PageContentEditor() {
   const [uploading, setUploading] = useState(false);
@@ -350,6 +351,27 @@ export default function PageContentEditor() {
               </button>
             </div>
           </form>
+        </div>
+
+        {/* 3. Alliances & Certifications Quick Navigation Card */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-3xl p-6 md:p-8 border border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-blue text-white flex items-center justify-center shadow-md shadow-brand-blue/20 shrink-0">
+              <Handshake size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 text-lg">Manage Alliances & Certifications</h3>
+              <p className="text-gray-500 text-xs mt-0.5">
+                Customize strategic brand partner logos, ISO & compliance badges, and column headings.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/dashboard/alliances"
+            className="px-5 py-3 rounded-xl bg-brand-blue hover:bg-brand-blue/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-brand-blue/15 transition-all self-start sm:self-center shrink-0"
+          >
+            Open Alliances Manager <ArrowRight size={14} />
+          </Link>
         </div>
       </div>
 

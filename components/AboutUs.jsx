@@ -28,7 +28,7 @@ const AboutUs = () => {
   const visionDesc = aboutContent.visionDesc || "To be the catalyst for a smarter, more connected global infrastructure.";
   const buttonText = aboutContent.buttonText || "Learn More About Us";
   const buttonLink = aboutContent.buttonLink || "/about/company-overview";
-  const imageUrl = aboutContent.imageUrl || "/assets/about-2.webp";
+  const imageUrl = aboutContent.imageUrl || "/assets/about-2.jpg";
 
   return (
     <section className="py-24 bg-white overflow-hidden" id="about">
